@@ -22,4 +22,33 @@
       <div class="halo ring r1"></div>
       <div class="halo ring r2"></div>
       <div class="halo ring r3"></div>
-      <span class="halo-label">Click&nbsp
+      <span class="halo-label">Click&nbsp;to&nbsp;Talk</span>
+    </button>
+    <audio id="remote" autoplay playsinline></audio>
+    <button id="stopBtn" class="stop-btn hidden">⏸ Stop Voice</button>
+  </main>
+
+  <!-- Classic Chat -->
+  <section class="quiet">
+    <form id="quietForm" class="quiet-form" autocomplete="off">
+      <input id="quietInput" class="quiet-input" type="text"
+             placeholder="Text your questions here — private conversation." />
+      <button id="sendBtn" class="pill send-btn" type="submit">Send</button>
+    </form>
+    <div id="thread" class="thread"></div>
+  </section>
+
+  <!-- Bottom Buttons -->
+  <div class="bottom-buttons">
+    <button class="corner-btn left" onclick="openThread()">🗨 View Conversation</button>
+    <a class="corner-btn right" href="tel:18005551234">📞 Contact Human</a>
+  </div>
+
+  <!-- 🛒 CART MODAL -->
+  <div id="cartModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Your Cart – WalSmart™</h2>
+      <table class="cart-table">
+        <tr><td>Organic Apples (2 lb)</td><td>$3.49</td></tr>
+        <tr><td>Windshield De-Icer – 1 gal</td><td>$12.99</td></tr>
+        <tr class="total-row"><td><strong>Total</strong></td><td><stro
