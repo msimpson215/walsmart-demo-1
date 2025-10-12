@@ -2,115 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>WalSmart™ by VoxTalk</title>
+  <title>VoxTalk™ Clone-11 (Stripe)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-  <!-- Header -->
   <header class="topbar">
-    <h1 class="brand">WalSmart<sup>™</sup> <span class="byline">powered by VoxTalk</span></h1>
+    <h1 class="brand">VoxTalk<sup>™</sup></h1>
     <nav class="nav-buttons">
-      <button class="pill ghost" onclick="openModal('cartModal')">Cart</button>
-      <button class="pill ghost" onclick="openModal('infoModal')">Info</button>
-      <button class="pill ghost" onclick="openModal('checkoutModal')">Checkout</button>
+      <button class="pill ghost" onclick="openModal('cartModal')">🛒 Cart</button>
+      <button class="pill ghost" onclick="openModal('infoModal')">ℹ️ Info</button>
+      <button class="pill ghost" onclick="openModal('checkoutModal')">💳 Checkout</button>
     </nav>
-    <div class="upload-zone">
-      <label for="listUpload" class="pill ghost">Upload Your Grocery List</label>
-      <input id="listUpload" type="file" accept=".txt,.csv" hidden />
-    </div>
   </header>
 
-  <!-- Halo -->
   <main class="stage">
-    <button id="haloBtn" class="halo-btn" aria-pressed="false">
+    <button id="haloBtn" class="halo-btn">
       <div class="halo ring r1"></div>
       <div class="halo ring r2"></div>
       <div class="halo ring r3"></div>
-      <span class="halo-label">Click&nbsp;to&nbsp;Talk</span>
-    </button>
-  </main>
-
-  <!-- No Voice Mode -->
-  <section class="quiet">
-    <form id="quietForm" class="quiet-form" autocomplete="off">
-      <input id="quietInput" class="quiet-input" type="text"
-             placeholder="No Voice Mode — text your question here..." />
-      <div class="quiet-controls">
-        <button id="micBtn" class="pill mic-btn">🎤</button>
-        <button id="sendBtn" class="pill send-btn">Send</button>
-      </div>
-    </form>
-    <div id="thread" class="thread"></div>
-  </section>
-
-  <!-- Corner Buttons -->
-  <button id="printBtn" class="corner-btn left" onclick="window.print()">Print Conversation</button>
-  <a id="humanBtn" class="corner-btn right" href="tel:18005551234">Contact Human</a>
-
-  <!-- ---------- Modals ---------- -->
-  <div id="cartModal" class="modal hidden">
-    <div class="modal-content">
-      <h2>Your Cart – WalSmart™</h2>
-      <table class="cart-table">
-        <tr><td>Organic Apples (2 lb)</td><td>$3.49</td></tr>
-        <tr><td>Windshield De-Icer – 1 gal</td><td>$12.99</td></tr>
-        <tr><td><strong>Total</strong></td><td><strong>$16.48</strong></td></tr>
-      </table>
-      <p class="note">Click Checkout to proceed or Close to continue shopping.</p>
-      <button class="pill" onclick="closeModal('cartModal')">Close</button>
-    </div>
-  </div>
-
-  <div id="checkoutModal" class="modal hidden">
-    <div class="modal-content">
-      <h2>WalSmart™ Checkout</h2>
-      <form class="checkout-form">
-        <label>Name on Card</label><input type="text" placeholder="John Doe">
-        <label>Card Number</label><input type="text" placeholder="•••• •••• •••• 1234">
-        <label>Expiration</label><input type="text" placeholder="MM/YY">
-        <label>CVV</label><input type="text" placeholder="123">
-        <label>Billing ZIP</label><input type="text" placeholder="63101">
-        <button class="pill" type="button">Place Order</button>
-      </form>
-      <p class="note">No real data is sent – demo only.</p>
-      <button class="pill" onclick="closeModal('checkoutModal')">Close</button>
-    </div>
-  </div>
-
-  <div id="infoModal" class="modal hidden">
-    <div class="modal-content">
-      <h2>About VoxTalk &amp; WalSmart</h2>
-      <p>
-        WalSmart™ is built on VoxTalk™ — a conversational assistant designed for partnership.<br>
-        Technology that listens, and humans who lead.<br><br>
-        You can talk, or if you prefer, use “No Voice Mode” and type your question instead.
-      </p>
-      <p class="note">Click outside this box to return.</p>
-      <button class="pill" onclick="closeModal('infoModal')">Close</button>
-    </div>
-  </div>
-
-  <!-- ---------- Scripts ---------- -->
-  <script>
-    function openModal(id){document.getElementById(id).classList.remove('hidden');}
-    function closeModal(id){document.getElementById(id).classList.add('hidden');}
-    document.querySelectorAll('.modal').forEach(m =>
-      m.addEventListener('click', e => { if(e.target === m) m.classList.add('hidden'); })
-    );
-
-    // Upload Grocery List preview
-    document.getElementById('listUpload').addEventListener('change', e=>{
-      const file = e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const lines = reader.result.split(/\r?\n/).filter(Boolean);
-        alert("Grocery list uploaded:\n" + lines.join("\n"));
-      };
-      reader.readAsText(file);
-    });
-  </script>
-</body>
-</html>
+      <span class="halo-label">Click&nbsp
