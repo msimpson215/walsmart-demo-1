@@ -2,33 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Walmart – AI experience • VoxTalk™</title>
+  <title>Walmart — AI experience • VoxTalk™</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="navbar">
     <h1 class="brand">
-      Walmart<span class="brand-icon">✳</span>
+      <span class="brand-main">Walmart</span><span class="brand-icon">✳</span>
     </h1>
-    <p class="ai-powered">AI experience — powered by VoxTalk™</p>
+    <p class="ai-powered">AI experience — comfortably powered by VoxTalk™</p>
   </header>
 
   <main class="container">
-    <div class="portal-row">
-      <button id="cartBtn" class="portal">🛒 Cart</button>
-      <button id="infoBtn" class="portal">ℹ️ Info</button>
-      <button id="checkoutBtn" class="portal">💳 Checkout</button>
+    <!-- Action row -->
+    <div class="portal-row" role="group">
+      <button class="portal" data-target="cartPanel">🛒 Cart</button>
+      <button class="portal" data-target="infoPanel">ℹ️ Info</button>
+      <button class="portal" data-target="checkoutPanel">💳 Checkout</button>
     </div>
 
+    <!-- Grocery upload -->
     <div class="upload-section">
-      <button id="uploadBtn">Upload your grocery list</button>
+      <button id="uploadBtn" class="upload-btn">Upload your grocery list</button>
       <input type="file" id="fileUpload" accept=".txt,.jpg,.png,.pdf" hidden>
     </div>
 
+    <!-- Chat -->
     <div class="chat-section">
-      <h2>Talk to your AI Walmart grocery associate</h2>
+      <h2>Let our AI grocery associate help you shop</h2>
       <button id="pttBtn" class="halo-button"></button>
+      <div id="voiceStatus" class="hint">Click to talk</div>
       <audio id="remote" autoplay playsinline></audio>
 
       <div id="answer" class="transcript"></div>
@@ -38,90 +42,117 @@
         <button id="sendBtn">Send</button>
       </div>
 
+      <!-- Pause directly under halo -->
+      <div class="pause-wrap">
+        <button id="pauseBtn">Pause</button>
+      </div>
+
+      <!-- Controls left/right -->
       <div class="controls">
-        <button id="showConversation">Show Conversation</button>
-        <button id="contactHuman">Contact a Human</button>
-        <button id="stopBtn">Stop</button>
+        <button id="showConversation" class="left">Show Conversation</button>
+        <button id="contactHuman" class="right">Contact a Human</button>
       </div>
     </div>
 
+    <!-- Panels -->
     <section id="cartPanel" class="panel hidden">
       <h3>Your Cart</h3><p>Your cart is empty.</p>
     </section>
     <section id="infoPanel" class="panel hidden">
-      <h3>Information</h3><p>This is the standard VoxTalk layout.</p>
+      <h3>Information</h3><p>Standard VoxTalk layout for brand consistency.</p>
     </section>
     <section id="checkoutPanel" class="panel hidden">
       <h3>Checkout</h3><p>Checkout flow coming soon.</p>
     </section>
+
+    <!-- Contact panel -->
+    <section id="contactPanel" class="contact-panel hidden">
+      <div class="contact-header">
+        <span>Need a human?</span>
+        <button id="contactClose" class="contact-close">×</button>
+      </div>
+      <div class="contact-body">
+        <p>Email: <a href="mailto:support@example.com">support@example.com</a></p>
+        <p>Phone: <a href="tel:+18885551234">+1 (888) 555-1234</a></p>
+      </div>
+    </section>
   </main>
 
   <script>
-    // ----- upload -----
-    const uploadBtn = document.getElementById('uploadBtn');
-    const fileUpload = document.getElementById('fileUpload');
-    uploadBtn.onclick = ()=> fileUpload.click();
+    /* ---- Upload ---- */
+    uploadBtn.onclick = () => fileUpload.click();
 
-    // ----- panel toggles -----
-    const panels = {
-      cartBtn:"cartPanel",
-      infoBtn:"infoPanel",
-      checkoutBtn:"checkoutPanel"
-    };
-    Object.keys(panels).forEach(id=>{
-      document.getElementById(id).onclick = ()=>{
-        Object.values(panels).forEach(pid=>document.getElementById(pid).classList.add("hidden"));
-        document.getElementById(panels[id]).classList.remove("hidden");
-      };
-    });
-
-    // ----- show conversation / contact / stop -----
-    document.getElementById("showConversation").onclick = ()=>window.print();
-    document.getElementById("contactHuman").onclick = ()=>window.location.href="mailto:support@example.com";
-    document.getElementById("stopBtn").onclick = ()=>{
-      try {
-        if (window.micStream) window.micStream.getTracks().forEach(t=>t.stop());
-        if (window.pc) window.pc.close();
-      }catch{}
-    };
-
-    // ----- classic chat -----
-    const userInput=document.getElementById("userInput");
-    const sendBtn=document.getElementById("sendBtn");
-    const answer=document.getElementById("answer");
-    function add(role,text){
-      const p=document.createElement("p"); p.textContent=text; p.className=role;
-      answer.appendChild(p); answer.scrollTop=answer.scrollHeight;
+    /* ---- Classic chat ---- */
+    const inputEl = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const answerEl = document.getElementById("answer");
+    function append(role, text){
+      const p = document.createElement("p");
+      p.className = role;
+      p.textContent = text;
+      answerEl.appendChild(p);
+      answerEl.scrollTop = answerEl.scrollHeight;
     }
-    async function sendMsg(){
-      const text=userInput.value.trim(); if(!text) return;
-      add("user",text); userInput.value="";
+    async function sendChat(){
+      const text = inputEl.value.trim();
+      if(!text) return;
+      append("user", text);
+      inputEl.value = "";
       try{
-        const r=await fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text})});
-        const d=await r.json(); add("assistant",d.reply||"");
-      }catch(e){ add("error","Chat unavailable"); }
+        const r = await fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text})});
+        const d = await r.json();
+        append("assistant", d.reply || "");
+      }catch{ append("error","Chat unavailable."); }
     }
-    sendBtn.onclick=sendMsg;
-    userInput.onkeydown=(e)=>{if(e.key==="Enter")sendMsg();};
+    sendBtn.onclick = sendChat;
+    inputEl.onkeydown = e=>{ if(e.key==="Enter") sendChat(); };
 
-    // ----- realtime -----
-    const pttBtn=document.getElementById("pttBtn");
-    const remote=document.getElementById("remote");
-    pttBtn.onclick = async ()=>{
+    /* ---- Realtime voice ---- */
+    const pttBtn = document.getElementById("pttBtn");
+    const remote = document.getElementById("remote");
+    const voiceStatus = document.getElementById("voiceStatus");
+    let pc, micStream;
+    async function startSession(){
+      voiceStatus.textContent="Connecting…";
       try{
         const r=await fetch("/session");
         const data=await r.json();
-        window.pc=new RTCPeerConnection();
-        window.micStream=await navigator.mediaDevices.getUserMedia({audio:true});
+        pc=new RTCPeerConnection();
+        micStream=await navigator.mediaDevices.getUserMedia({audio:true});
         micStream.getTracks().forEach(t=>pc.addTrack(t,micStream));
         pc.ontrack=e=>remote.srcObject=e.streams[0];
         const offer=await pc.createOffer(); await pc.setLocalDescription(offer);
-        const sdp=await fetch("https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",
+        const sdpRes=await fetch("https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",
           {method:"POST",headers:{Authorization:`Bearer ${data.client_secret.value}`,"Content-Type":"application/sdp"},body:offer.sdp});
-        const answer={type:"answer",sdp:await sdp.text()};
+        const answer={type:"answer",sdp:await sdpRes.text()};
         await pc.setRemoteDescription(answer);
-      }catch(e){add("error","Voice unavailable");}
+        voiceStatus.textContent="Live";
+      }catch(e){
+        voiceStatus.textContent="Unavailable";
+        append("error","Voice unavailable."); console.error(e);
+      }
+    }
+    pttBtn.onclick = startSession;
+
+    /* ---- Pause ---- */
+    document.getElementById("pauseBtn").onclick = ()=>{
+      if(micStream) micStream.getTracks().forEach(t=>t.enabled=!t.enabled);
     };
+
+    /* ---- Panels ---- */
+    const allPanels=document.querySelectorAll(".panel");
+    document.querySelectorAll(".portal").forEach(btn=>{
+      btn.onclick=()=>{
+        allPanels.forEach(p=>p.classList.add("hidden"));
+        document.getElementById(btn.dataset.target).classList.remove("hidden");
+      };
+    });
+
+    /* ---- Controls ---- */
+    document.getElementById("showConversation").onclick=()=>window.print();
+    const contactPanel=document.getElementById("contactPanel");
+    document.getElementById("contactHuman").onclick=()=>contactPanel.classList.remove("hidden");
+    document.getElementById("contactClose").onclick=()=>contactPanel.classList.add("hidden");
   </script>
 </body>
 </html>
