@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>WalSmart™</title>
+  <title>WalSmart</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
   <script src="https://js.stripe.com/v3/"></script>
@@ -11,7 +11,7 @@
   <!-- Header -->
   <header class="topbar">
     <h1 class="brand">
-      WalSmart<sup>™</sup>
+      WalSmart<span class="spark">✳</span>
       <span class="powered">powered by VoxTalk™</span>
     </h1>
     <nav class="nav-buttons">
@@ -21,7 +21,7 @@
     </nav>
     <div class="upload-zone">
       <label for="listUpload" class="pill ghost">📤 Upload Your Grocery List</label>
-      <input id="listUpload" type="file" accept=".txt,.csv" hidden />
+      <input id="listUpload" type="file" accept=".txt,.csv,.jpg,.jpeg,.png" hidden />
     </div>
   </header>
 
@@ -54,7 +54,7 @@
   <!-- CART -->
   <div id="cartModal" class="modal hidden">
     <div class="modal-content">
-      <h2>Your Cart – WalSmart™</h2>
+      <h2>Your Cart – WalSmart</h2>
       <table class="cart-table">
         <tr><td>Organic Apples (2 lb)</td><td>$3.49</td></tr>
         <tr><td>Windshield De-Icer – 1 gal</td><td>$12.99</td></tr>
@@ -78,27 +78,27 @@
   <!-- INFO -->
   <div id="infoModal" class="modal hidden">
     <div class="modal-content">
-      <h2>About WalSmart™</h2>
-      <p><strong>WalSmart™</strong> brings real-time voice shopping assistance through VoxTalk AI.  
-         Speak or type freely to get help any time.</p>
+      <h2>About WalSmart</h2>
+      <p><strong>WalSmart</strong> brings real-time voice shopping through VoxTalk AI.  
+         Speak or type freely to find products, compare prices, and check out instantly.</p>
       <button class="pill" onclick="closeModal('infoModal')">Close</button>
     </div>
   </div>
 
   <!-- Footer -->
   <footer class="footer">
-    © 2025 WalSmart Inc. · powered by VoxTalk™
+    © 2025 WalSmart Demo · powered by VoxTalk™ (internal prototype)
   </footer>
 
   <script>
-    // Modals
+    // Modal logic
     function openModal(id){document.getElementById(id).classList.remove('hidden');}
     function closeModal(id){document.getElementById(id).classList.add('hidden');}
     document.querySelectorAll('.modal').forEach(m =>
       m.addEventListener('click', e => { if(e.target===m) m.classList.add('hidden'); })
     );
 
-    // Voice
+    // Voice (placeholder)
     const haloBtn=document.getElementById("haloBtn");
     const stopBtn=document.getElementById("stopBtn");
     const remote=document.getElementById("remote");
@@ -106,27 +106,32 @@
     haloBtn.onclick=async()=>{
       haloBtn.disabled=true;
       haloBtn.querySelector(".halo-label").textContent="Connecting...";
-      const resp=await fetch("/session",{method:"POST"});
-      const data=await resp.json();
-      if(!data?.client_secret?.value)return;
-      pc=new RTCPeerConnection();
-      pc.ontrack=e=>remote.srcObject=e.streams[0];
-      localStream=await navigator.mediaDevices.getUserMedia({audio:true});
-      localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
-      const offer=await pc.createOffer();
-      await pc.setLocalDescription(offer);
-      const r2=await fetch("https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",{
-        method:"POST",
-        headers:{
-          Authorization:`Bearer ${data.client_secret.value}`,
-          "Content-Type":"application/sdp"
-        },
-        body:offer.sdp
-      });
-      const answer={type:"answer",sdp:await r2.text()};
-      await pc.setRemoteDescription(answer);
-      haloBtn.querySelector(".halo-label").textContent="Live";
-      stopBtn.classList.remove("hidden");
+      try{
+        const resp=await fetch("/session",{method:"POST"});
+        const data=await resp.json();
+        if(!data?.client_secret?.value) throw new Error("No client secret");
+        pc=new RTCPeerConnection();
+        pc.ontrack=e=>remote.srcObject=e.streams[0];
+        localStream=await navigator.mediaDevices.getUserMedia({audio:true});
+        localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
+        const offer=await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        const r2=await fetch("https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",{
+          method:"POST",
+          headers:{
+            Authorization:`Bearer ${data.client_secret.value}`,
+            "Content-Type":"application/sdp"
+          },
+          body:offer.sdp
+        });
+        const answer={type:"answer",sdp:await r2.text()};
+        await pc.setRemoteDescription(answer);
+        haloBtn.querySelector(".halo-label").textContent="Live";
+        stopBtn.classList.remove("hidden");
+      }catch(err){
+        console.error(err);
+        haloBtn.querySelector(".halo-label").textContent="Error";
+      }
     };
     stopBtn.onclick=()=>{
       if(localStream) localStream.getTracks().forEach(t=>t.stop());
@@ -159,9 +164,11 @@
     // Stripe
     const stripe=Stripe("pk_test_51SHCGpE44DdqctQ41sbQyxJ2Sjx4yh6SXV01ZSB34foIWPvl8OKCkfkYw9017PhK2tp0euZTaLjxvI1FOQ4uA8hm00ELjyCDK5");
     document.getElementById("checkoutBtn").addEventListener("click",async()=>{
-      const resp=await fetch("/create-checkout-session",{method:"POST"});
-      const data=await resp.json();
-      window.location.href=data.url;
+      try{
+        const resp=await fetch("/create-checkout-session",{method:"POST"});
+        const data=await resp.json();
+        if(data?.url) window.location.href=data.url;
+      }catch(err){console.error("Stripe error",err);}
     });
 
     // Upload List
