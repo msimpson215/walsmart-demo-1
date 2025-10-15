@@ -21,6 +21,7 @@ body{
 .topbar{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 10px;}
 .brand{
   font-size:2rem;font-weight:700;color:var(--walmart-blue);
+  text-align:center;
 }
 .brand sup{font-size:0.6em;}
 .brand .powered{
@@ -98,6 +99,18 @@ body{
 }
 .corner-btn.left{left:14px;}
 .corner-btn.right{right:14px;}
+
+/* Footer */
+.footer{
+  text-align:center;
+  width:100%;
+  padding:18px 0;
+  margin-top:auto;
+  background:#ffffff;
+  color:#777;
+  font-size:0.85rem;
+  border-top:1px solid #ddd;
+}
 
 /* Modals */
 .modal{
