@@ -1,110 +1,109 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #002b8e; /* deep WalSmart blue */
-  color: white;
-  margin: 0;
-  text-align: center;
-}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>WalSmart – Powered by VoxTalk™</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+  <header class="navbar">
+    <h1 class="brand">
+      <span class="brand-main">WalSmart</span>
+      <span class="brand-icon">✳</span>
+      <span class="powered-by">Powered by VoxTalk™</span>
+    </h1>
+  </header>
 
-.navbar {
-  background-color: #002b8e;
-  padding: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  <main class="container">
+    <div class="portal-buttons">
+      <button id="cartBtn" class="portal">Cart</button>
+      <button id="infoBtn" class="portal">Info</button>
+      <button id="checkoutBtn" class="portal">Checkout</button>
+    </div>
 
-.brand {
-  display: flex;
-  align-items: baseline;
-  gap: 0.4rem;
-}
+    <div class="chat-section">
+      <h2>Talk to VoxTalk</h2>
+      <button id="pttBtn" aria-pressed="false" class="halo-button"></button>
+      <div class="hint">Click to Talk</div>
+      <div id="answer"><div class="muted">Conversation will appear here.</div></div>
+      <audio id="remote" autoplay playsinline></audio>
 
-.brand-main {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #fff;
-}
+      <div class="classic-chat">
+        <input id="userInput" placeholder="Type here to chat…" />
+        <button id="sendBtn">Send</button>
+      </div>
+    </div>
 
-.brand-icon {
-  color: #ffa600; /* orange accent */
-  font-size: 1.5rem;
-}
+    <div class="upload-section">
+      <label for="fileUpload">Upload grocery list:</label>
+      <input type="file" id="fileUpload" accept=".txt,.jpg,.png,.pdf">
+    </div>
 
-.powered-by {
-  font-size: 0.9rem;
-  color: #ffa600;
-  margin-left: 0.5rem;
-}
+    <div class="purchase-section">
+      <button id="checkout">Buy Now</button>
+    </div>
+  </main>
 
-.container {
-  padding: 2rem;
-}
+  <footer>
+    <p>©2025 WalSmart – All Rights Reserved.</p>
+  </footer>
 
-.portal-buttons {
-  margin-bottom: 1rem;
-}
+  <script>
+    const stripe = Stripe("<%= STRIPE_PUBLIC_KEY %>");
+    const checkoutBtn = document.getElementById("checkout");
 
-.portal {
-  background-color: #ffa600;
-  color: #002b8e;
-  border: none;
-  padding: 0.7rem 1.2rem;
-  margin: 0 0.4rem;
-  font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-}
+    checkoutBtn.addEventListener("click", async () => {
+      const res = await fetch("/create-checkout-session", { method: "POST" });
+      const data = await res.json();
+      const result = await stripe.redirectToCheckout({ sessionId: data.id });
+      if (result.error) alert(result.error.message);
+    });
 
-.portal:hover {
-  background-color: #ffbb33;
-}
+    // --- VoxTalk Realtime / Classic Chat ---
+    const pttBtn   = document.getElementById("pttBtn");
+    const answerEl = document.getElementById("answer");
+    const remoteEl = document.getElementById("remote");
+    const inputEl  = document.getElementById("userInput");
+    const sendBtn  = document.getElementById("sendBtn");
 
-.chat-section {
-  margin-top: 2rem;
-}
+    async function startSession() {
+      const r = await fetch("/session");
+      const data = await r.json();
+      const pc = new RTCPeerConnection();
+      const ms = await navigator.mediaDevices.getUserMedia({ audio: true });
+      ms.getTracks().forEach(t => pc.addTrack(t, ms));
+      pc.ontrack = e => remoteEl.srcObject = e.streams[0];
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      const sdpResponse = await fetch("https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${data.client_secret.value}`,
+          "Content-Type": "application/sdp"
+        },
+        body: offer.sdp
+      });
+      const answer = { type: "answer", sdp: await sdpResponse.text() };
+      await pc.setRemoteDescription(answer);
+    }
 
-.halo-button {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: none;
-  background: radial-gradient(circle, #ffa600 0%, #ff8800 60%, #002b8e 100%);
-  cursor: pointer;
-  margin-top: 1rem;
-}
+    pttBtn.addEventListener("click", startSession);
 
-.classic-chat {
-  margin-top: 1.5rem;
-}
-
-#userInput {
-  padding: 0.5rem;
-  width: 60%;
-  border-radius: 6px;
-  border: none;
-}
-
-#sendBtn {
-  padding: 0.5rem 1rem;
-  background-color: #ffa600;
-  border: none;
-  border-radius: 6px;
-  color: #002b8e;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.upload-section {
-  margin-top: 2rem;
-}
-
-.purchase-section {
-  margin-top: 2rem;
-}
-
-footer {
-  margin-top: 3rem;
-  font-size: 0.8rem;
-  color: #ccc;
-}
+    sendBtn.addEventListener("click", async () => {
+      const text = inputEl.value.trim();
+      if (!text) return;
+      const r = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      });
+      const data = await r.json();
+      answerEl.innerHTML = `<p>${data.reply}</p>`;
+      inputEl.value = "";
+    });
+  </script>
+</body>
+</html>
