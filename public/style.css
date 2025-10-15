@@ -1,175 +1,81 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Walmart — AI experience • VoxTalk™</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header class="navbar">
-    <h1 class="brand">
-      <span class="brand-main">Walmart</span><span class="brand-icon">✳</span>
-    </h1>
-    <p class="ai-powered">A comfortable AI experience — powered by VoxTalk™</p>
-  </header>
+:root{
+  --primary-bg:#002b8e;   /* Walmart blue */
+  --accent:#fdb913;       /* Walmart yellow */
+  --text:#ffffff;
+  --text-dark:#0f172a;
+  --neutral:#e9edf2;      /* neutral for upload button */
+}
 
-  <main class="container">
-    <!-- One-line action row; data-target ensures reliable switching -->
-    <div class="portal-row" role="group" aria-label="Primary actions">
-      <button id="cartBtn" class="portal" data-target="cartPanel">🛒 Cart</button>
-      <button id="infoBtn" class="portal" data-target="infoPanel">ℹ️ Info</button>
-      <button id="checkoutBtn" class="portal" data-target="checkoutPanel">💳 Checkout</button>
-    </div>
+*{box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;margin:0;background:var(--primary-bg);color:var(--text);}
 
-    <!-- Upload below actions -->
-    <div class="upload-section">
-      <button id="uploadBtn" class="upload-btn">Upload your grocery list</button>
-      <input type="file" id="fileUpload" accept=".txt,.jpg,.png,.pdf" hidden>
-    </div>
+.navbar{padding:1rem 1rem .5rem;text-align:center;}
+.brand{display:inline-flex;align-items:baseline;gap:.25rem;}
+/* Much bigger Walmart */
+.brand-main{font-size:3rem;font-weight:800;letter-spacing:.3px;color:#fff;}
+.brand-icon{color:var(--accent);font-size:1.8rem;margin-left:.2rem;}
+.ai-powered{margin:.35rem 0 0;font-size:.95rem;color:var(--accent);opacity:.95;}
 
-    <div class="chat-section">
-      <h2>Talk to your AI Walmart grocery associate</h2>
-      <button id="pttBtn" class="halo-button" title="Click to talk"></button>
-      <audio id="remote" autoplay playsinline></audio>
+.container{padding:1rem 1rem 2rem;max-width:1100px;margin:0 auto;}
 
-      <div id="answer" class="transcript" aria-live="polite"></div>
+/* Action row — always linear; horizontal scroll on very small screens */
+.portal-row{display:flex;gap:.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:.25rem;justify-content:center;flex-wrap:nowrap;}
+.portal{
+  flex:0 0 auto;min-width:130px;text-align:center;background:var(--accent);
+  color:var(--primary-bg);border:none;padding:.75rem 1.1rem;font-weight:800;cursor:pointer;
+}
 
-      <div class="classic-chat">
-        <input id="userInput" placeholder="Type here to chat…" autocomplete="off" />
-        <button id="sendBtn">Send</button>
-      </div>
+/* Upload below, neutral color to avoid too much orange */
+.upload-section{margin:1rem 0 0;display:flex;justify-content:center;}
+.upload-btn{background:var(--neutral);color:var(--primary-bg);border:none;padding:.65rem 1.3rem;font-weight:800;cursor:pointer;}
 
-      <div class="controls">
-        <button id="showConversation">Show Conversation</button>
-        <button id="contactHuman">Contact a Human</button>
-        <button id="stopBtn">Stop</button>
-      </div>
-    </div>
+.chat-section{margin-top:1.25rem;text-align:center;}
+/* Bigger halo button */
+.halo-button{
+  width:130px;height:130px;border-radius:50%;
+  border:3px solid var(--accent);
+  background:radial-gradient(circle,var(--accent) 0%, var(--primary-bg) 92%);
+  cursor:pointer;margin-top:.5rem;animation:haloPulse 3s infinite;
+}
+@keyframes haloPulse{
+  0%{box-shadow:0 0 0 0 rgba(253,185,19,.55);}
+  70%{box-shadow:0 0 0 26px rgba(253,185,19,0);}
+  100%{box-shadow:0 0 0 0 rgba(253,185,19,0);}
+}
 
-    <!-- Panels -->
-    <section id="cartPanel" class="panel hidden" aria-label="Cart">
-      <h3>Your Cart</h3><p>Your cart is empty.</p>
-    </section>
+.transcript{max-width:820px;margin:1rem auto 0;padding:0 1rem;max-height:38vh;overflow:auto;text-align:left;}
+.transcript p{margin:.4rem 0;}
+.transcript p.user{color:#fff;}
+.transcript p.assistant{color:#e6f0ff;}
+.transcript p.error{color:#ffdddd;}
 
-    <section id="infoPanel" class="panel hidden" aria-label="Info">
-      <h3>Information</h3>
-      <p>This demo uses the standard VoxTalk layout for a consistent experience across brands.</p>
-    </section>
+.classic-chat{margin-top:1rem;display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;}
+#userInput{width:min(720px,70vw);padding:.6rem .8rem;border:none;border-radius:6px;}
+#sendBtn{padding:.6rem 1.1rem;border:none;border-radius:6px;background:var(--accent);color:var(--primary-bg);font-weight:800;cursor:pointer;}
 
-    <section id="checkoutPanel" class="panel hidden" aria-label="Checkout">
-      <h3>Checkout</h3><p>Checkout flow coming soon (UI only in this demo).</p>
-    </section>
+.controls{margin-top:1rem;display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;}
+.controls button{background:var(--accent);color:var(--primary-bg);border:none;padding:.55rem 1.1rem;font-weight:800;cursor:pointer;}
 
-    <!-- Sharp-corner in-page contact panel -->
-    <section id="contactPanel" class="contact-panel hidden" aria-label="Contact">
-      <div class="contact-header">
-        <span>Need a human?</span>
-        <button id="contactClose" class="contact-close" title="Close">×</button>
-      </div>
-      <div class="contact-body">
-        <p>Email: <a href="mailto:support@example.com">support@example.com</a></p>
-        <p>Phone: <a href="tel:+18885551234">+1 (888) 555-1234</a></p>
-      </div>
-    </section>
-  </main>
+.panel{margin:1.25rem auto 0;padding:1rem;max-width:900px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);}
+.panel h3{margin:.2rem 0 .6rem;}
+.hidden{display:none;}
 
-  <script>
-    /* ---- Upload ---- */
-    const uploadBtn = document.getElementById('uploadBtn');
-    const fileInput = document.getElementById('fileUpload');
-    uploadBtn.addEventListener('click', () => fileInput.click());
+/* Sharp-corner contact panel (no rounded edges) */
+.contact-panel{
+  position:fixed;left:50%;top:20%;transform:translateX(-50%);
+  width:min(520px,90vw);background:#ffffff;color:var(--text-dark);
+  border:2px solid #111; /* sharp */
+  z-index:9999;padding:0;
+}
+.contact-panel.hidden{display:none;}
+.contact-header{display:flex;justify-content:space-between;align-items:center;padding:.6rem .8rem;background:#111;color:#fff;font-weight:800;}
+.contact-close{background:#fff;color:#111;border:2px solid #111;padding:.2rem .6rem;font-weight:800;cursor:pointer;}
+.contact-body{padding:1rem 1rem 1.2rem;}
+.contact-body a{color:#0a58ca;text-decoration:underline;}
 
-    /* ---- Classic chat ---- */
-    const inputEl = document.getElementById("userInput");
-    const sendBtn = document.getElementById("sendBtn");
-    const answerEl = document.getElementById("answer");
-    function append(role, text){
-      const p = document.createElement('p');
-      p.className = role;
-      p.textContent = text;
-      answerEl.appendChild(p);
-      answerEl.scrollTop = answerEl.scrollHeight;
-    }
-    async function sendChat(){
-      const text = inputEl.value.trim();
-      if(!text) return;
-      append("user", text); inputEl.value = "";
-      try{
-        const r = await fetch("/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text })
-        });
-        if(!r.ok) throw new Error("Chat endpoint error");
-        const d = await r.json();
-        append("assistant", d.reply || "(no reply)");
-      }catch(e){
-        append("error", "Text chat is unavailable right now.");
-        console.error(e);
-      }
-    }
-    sendBtn.addEventListener("click", sendChat);
-    inputEl.addEventListener("keydown", e => { if(e.key==="Enter") sendChat(); });
-
-    /* ---- Realtime voice (unchanged endpoints) ---- */
-    const pttBtn = document.getElementById("pttBtn");
-    const remoteEl = document.getElementById("remote");
-    let pc=null, micStream=null;
-    async function startSession(){
-      try{
-        const r = await fetch("/session");
-        if(!r.ok) throw new Error("Session endpoint error");
-        const data = await r.json();
-        pc = new RTCPeerConnection();
-        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        micStream.getTracks().forEach(t => pc.addTrack(t, micStream));
-        pc.ontrack = e => remoteEl.srcObject = e.streams[0];
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        const sdpResponse = await fetch("https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${data.client_secret.value}`,
-            "Content-Type": "application/sdp"
-          },
-          body: offer.sdp
-        });
-        const answer = { type: "answer", sdp: await sdpResponse.text() };
-        await pc.setRemoteDescription(answer);
-      } catch(e){
-        append("error", "Voice is unavailable right now.");
-        console.error(e);
-      }
-    }
-    pttBtn.addEventListener("click", startSession);
-
-    /* ---- Panel switching (robust via data-target) ---- */
-    const panelButtons = document.querySelectorAll(".portal");
-    const allPanels = document.querySelectorAll(".panel");
-    panelButtons.forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const target = btn.getAttribute("data-target");
-        allPanels.forEach(p => p.classList.add("hidden"));
-        const panel = document.getElementById(target);
-        if(panel) panel.classList.remove("hidden");
-      });
-    });
-
-    /* ---- Show/Contact/Stop ---- */
-    document.getElementById("showConversation").addEventListener("click", ()=> window.print());
-
-    const contactPanel = document.getElementById("contactPanel");
-    document.getElementById("contactHuman").addEventListener("click", ()=> contactPanel.classList.remove("hidden"));
-    document.getElementById("contactClose").addEventListener("click", ()=> contactPanel.classList.add("hidden"));
-
-    document.getElementById("stopBtn").addEventListener("click", ()=>{
-      try{
-        if (micStream) micStream.getTracks().forEach(t=>t.stop());
-        if (remoteEl.srcObject) remoteEl.srcObject.getTracks().forEach(t=>t.stop());
-        if (pc) pc.close();
-      }catch(_){}
-    });
-  </script>
-</body>
-</html>
+/* Mobile tweaks */
+@media (max-width:480px){
+  .brand-main{font-size:2.4rem;}
+  .halo-button{width:120px;height:120px;}
+  .portal{min-width:120px;}
+}
