@@ -1,154 +1,107 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Walmart ✳ — VoxTalk™</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header class="navbar">
-    <h1 class="brand">
-      <span class="brand-main">Walmart</span><span class="brand-icon">✳</span>
-    </h1>
-    <p class="tagline">Your neighborhood grocery store</p>
-  </header>
+:root{
+  --primary-bg:#002b8e;
+  --accent:#fdb913;
+  --neutral:#e9edf2;
+  --text:#fff;
+  --text-dark:#0f172a;
+}
 
-  <main class="container">
-    <!-- Primary buttons -->
-    <div class="portal-row">
-      <button id="cartBtn" class="portal">🛒 Cart</button>
-      <button id="infoBtn" class="portal">ℹ️ Info</button>
-      <button id="checkoutBtn" class="portal">💳 Checkout</button>
-    </div>
+/* Base */
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--primary-bg);
+  color:var(--text);
+  text-align:center;
+}
 
-    <!-- Upload -->
-    <div class="upload-section">
-      <button id="uploadBtn" class="upload-btn">Upload Your Grocery List</button>
-      <input type="file" id="fileUpload" accept=".txt,.jpg,.png,.pdf" hidden>
-    </div>
+/* Header */
+.navbar{padding:.6rem 1rem .3rem;}
+.brand-main{font-size:3.2rem;font-weight:900;}
+.brand-icon{color:var(--accent);font-size:1.7rem;margin-left:.2rem;}
+.tagline{font-size:.8rem;color:var(--accent);margin:0;}
+.container{padding:.5rem 1rem 1rem;max-width:1000px;margin:0 auto;}
 
-    <!-- Chat -->
-    <div class="chat-section">
-      <h2>Let Our AI Grocery Associate Help You</h2>
+/* Portals */
+.portal-row{display:flex;justify-content:center;gap:.4rem;flex-wrap:wrap;}
+.portal{
+  background:var(--accent);color:var(--primary-bg);
+  border:none;padding:.6rem .9rem;font-weight:800;
+  font-size:.9rem;cursor:pointer;
+}
 
-      <div class="voice-wrap">
-        <button id="pttBtn" class="halo-button"></button>
-        <div id="voiceStatus" class="hint">Click to Talk</div>
-        <button id="pauseBtn" class="pause-btn">Pause</button>
-      </div>
-      <audio id="remote" autoplay playsinline></audio>
+/* Upload */
+.upload-section{margin:.6rem 0;display:flex;justify-content:center;}
+.upload-btn{
+  background:var(--neutral);color:var(--primary-bg);
+  border:none;padding:.55rem 1.1rem;font-weight:800;cursor:pointer;
+}
 
-      <div id="answer" class="transcript"></div>
+/* Chat */
+.chat-section{margin-top:.8rem;}
+.halo-button{
+  width:130px;height:130px;border-radius:50%;
+  border:3px solid var(--accent);
+  background:radial-gradient(circle,var(--accent)0%,var(--primary-bg)92%);
+  animation:haloPulse 3s infinite;
+  cursor:pointer;
+}
+@keyframes haloPulse{
+  0%{box-shadow:0 0 0 0 rgba(253,185,19,.55);}
+  70%{box-shadow:0 0 0 20px rgba(253,185,19,0);}
+  100%{box-shadow:0 0 0 0 rgba(253,185,19,0);}
+}
+#voiceStatus{margin:.3rem 0;font-size:.9rem;opacity:.9;}
+.pause-btn{
+  background:var(--accent);color:var(--primary-bg);
+  border:none;padding:.35rem .8rem;font-weight:700;font-size:.85rem;
+  cursor:pointer;margin-top:.2rem;
+}
 
-      <div class="classic-chat">
-        <input id="userInput" placeholder="Type here to chat…" />
-        <button id="sendBtn">Send</button>
-      </div>
+/* Transcript */
+.transcript{max-width:800px;margin:.6rem auto;padding:0 .5rem;
+  max-height:38vh;overflow:auto;text-align:left;font-size:.9rem;}
+.transcript p{margin:.3rem 0;}
+.transcript p.user{color:#fff;}
+.transcript p.assistant{color:#e6f0ff;}
+.transcript p.error{color:#ffdddd;}
 
-      <div class="controls">
-        <button id="showConversation" class="left">Show Conversation</button>
-        <button id="contactHuman" class="right">Contact a Human</button>
-      </div>
-    </div>
+/* Classic Chat */
+.classic-chat{margin-top:.6rem;display:flex;justify-content:center;gap:.4rem;}
+#userInput{width:min(720px,70vw);padding:.45rem .6rem;border:none;border-radius:4px;}
+#sendBtn{padding:.45rem .9rem;border:none;border-radius:4px;
+  background:var(--accent);color:var(--primary-bg);
+  font-weight:800;font-size:.9rem;cursor:pointer;}
 
-    <!-- Panels -->
-    <section id="cartPanel" class="panel hidden"><h3>Cart</h3><p>Items will appear here.</p></section>
-    <section id="infoPanel" class="panel hidden"><h3>Information</h3><p>Store and product information will appear here.</p></section>
-    <section id="checkoutPanel" class="panel hidden"><h3>Checkout</h3><p>Checkout coming soon.</p></section>
+/* Controls */
+.controls{margin-top:.6rem;display:flex;justify-content:space-between;
+  max-width:380px;margin-inline:auto;}
+.controls button{
+  background:var(--accent);color:var(--primary-bg);
+  border:none;padding:.4rem .8rem;font-weight:800;
+  font-size:.8rem;cursor:pointer;
+}
 
-    <!-- Contact panel -->
-    <section id="contactPanel" class="contact-panel hidden">
-      <div class="contact-header">
-        <span>Need a human?</span>
-        <button id="contactClose" class="contact-close">×</button>
-      </div>
-      <div class="contact-body">
-        <p>Email: <a href="mailto:support@example.com">support@example.com</a></p>
-        <p>Phone: <a href="tel:+18885551234">+1 (888) 555-1234</a></p>
-      </div>
-    </section>
-  </main>
+/* Panels */
+.panel{margin:.8rem auto 0;padding:.8rem;
+  max-width:900px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.15);font-size:.9rem;}
+.hidden{display:none;}
 
-  <footer class="footer">
-    © 2025 VoxTalk • A comfortable AI experience — powered by VoxTalk™
-  </footer>
+/* Contact Panel */
+.contact-panel{
+  position:fixed;left:50%;top:20%;transform:translateX(-50%);
+  width:min(520px,90vw);background:#fff;color:var(--text-dark);
+  border:2px solid #111;z-index:9999;padding:0;
+}
+.contact-panel.hidden{display:none;}
+.contact-header{display:flex;justify-content:space-between;
+  align-items:center;padding:.6rem .8rem;
+  background:#111;color:#fff;font-weight:800;}
+.contact-close{background:#fff;color:#111;border:2px solid #111;
+  padding:.2rem .6rem;font-weight:800;cursor:pointer;}
+.contact-body{padding:1rem;}
+.contact-body a{color:#0a58ca;text-decoration:underline;}
 
-  <script>
-    /* Upload */
-    const uploadBtn=document.getElementById("uploadBtn");
-    const fileUpload=document.getElementById("fileUpload");
-    uploadBtn.onclick=()=>fileUpload.click();
-
-    /* Panels — Clone 11 logic */
-    function showPanel(id){
-      document.querySelectorAll(".panel").forEach(p=>p.classList.add("hidden"));
-      document.getElementById(id).classList.remove("hidden");
-      console.log("Opened panel:",id);
-    }
-    document.getElementById("cartBtn").onclick=()=>showPanel("cartPanel");
-    document.getElementById("infoBtn").onclick=()=>showPanel("infoPanel");
-    document.getElementById("checkoutBtn").onclick=()=>showPanel("checkoutPanel");
-
-    /* Chat */
-    const inputEl=document.getElementById("userInput");
-    const sendBtn=document.getElementById("sendBtn");
-    const answerEl=document.getElementById("answer");
-    function append(role,text){
-      const p=document.createElement("p");
-      p.className=role;p.textContent=text;
-      answerEl.appendChild(p);answerEl.scrollTop=answerEl.scrollHeight;
-    }
-    async function sendChat(){
-      const text=inputEl.value.trim();if(!text)return;
-      append("user",text);inputEl.value="";
-      try{
-        const r=await fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text})});
-        const d=await r.json();append("assistant",d.reply||"");
-      }catch{append("error","Chat unavailable.");}
-    }
-    sendBtn.onclick=sendChat;
-    inputEl.onkeydown=e=>{if(e.key==="Enter")sendChat();};
-
-    /* Voice */
-    const pttBtn=document.getElementById("pttBtn");
-    const remote=document.getElementById("remote");
-    const voiceStatus=document.getElementById("voiceStatus");
-    let pc,micStream;
-    async function startSession(){
-      voiceStatus.textContent="Connecting…";
-      try{
-        const r=await fetch("/session");
-        const data=await r.json();
-        pc=new RTCPeerConnection();
-        micStream=await navigator.mediaDevices.getUserMedia({audio:true});
-        micStream.getTracks().forEach(t=>pc.addTrack(t,micStream));
-        pc.ontrack=e=>remote.srcObject=e.streams[0];
-        const offer=await pc.createOffer();await pc.setLocalDescription(offer);
-        const sdpRes=await fetch("https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",
-          {method:"POST",headers:{Authorization:`Bearer ${data.client_secret.value}`,"Content-Type":"application/sdp"},body:offer.sdp});
-        const answer={type:"answer",sdp:await sdpRes.text()};
-        await pc.setRemoteDescription(answer);
-        voiceStatus.textContent="Live";
-      }catch(e){voiceStatus.textContent="Unavailable";append("error","Voice unavailable.");}
-    }
-    pttBtn.onclick=startSession;
-
-    /* Pause */
-    const pauseBtn=document.getElementById("pauseBtn");
-    pauseBtn.onclick=()=>{
-      if(micStream){
-        const enabled=micStream.getAudioTracks()[0].enabled;
-        micStream.getAudioTracks()[0].enabled=!enabled;
-        pauseBtn.textContent=enabled?"Resume":"Pause";
-      }
-    };
-
-    /* Controls */
-    document.getElementById("showConversation").onclick=()=>window.print();
-    const contactPanel=document.getElementById("contactPanel");
-    document.getElementById("contactHuman").onclick=()=>contactPanel.classList.remove("hidden");
-    document.getElementById("contactClose").onclick=()=>contactPanel.classList.add("hidden");
-  </script>
-</body>
-</html>
+/* Footer */
+.footer{margin-top:1rem;padding:.6rem 0;font-size:.8rem;color:var(--accent);}
