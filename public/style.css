@@ -1,40 +1,39 @@
+:root {
+  --primary-bg: #002b8e;  /* Walmart blue */
+  --accent: #fdb913;      /* Walmart yellow */
+  --text-color: #ffffff;
+}
+
 body {
   font-family: Arial, sans-serif;
-  background-color: #002b8e; /* deep WalSmart blue */
-  color: white;
+  background-color: var(--primary-bg);
+  color: var(--text-color);
   margin: 0;
   text-align: center;
 }
 
 .navbar {
-  background-color: #002b8e;
+  background-color: var(--primary-bg);
   padding: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.brand {
-  display: flex;
-  align-items: baseline;
-  gap: 0.4rem;
+  text-align: center;
 }
 
 .brand-main {
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: bold;
   color: #fff;
 }
 
 .brand-icon {
-  color: #ffa600; /* orange accent */
+  color: var(--accent);
   font-size: 1.5rem;
+  margin-left: 0.2rem;
 }
 
 .powered-by {
   font-size: 0.9rem;
-  color: #ffa600;
-  margin-left: 0.5rem;
+  color: var(--accent);
+  margin-top: -0.5rem;
 }
 
 .container {
@@ -46,8 +45,8 @@ body {
 }
 
 .portal {
-  background-color: #ffa600;
-  color: #002b8e;
+  background-color: var(--accent);
+  color: var(--primary-bg);
   border: none;
   padding: 0.7rem 1.2rem;
   margin: 0 0.4rem;
@@ -57,7 +56,7 @@ body {
 }
 
 .portal:hover {
-  background-color: #ffbb33;
+  background-color: #ffcc33;
 }
 
 .chat-section {
@@ -65,13 +64,20 @@ body {
 }
 
 .halo-button {
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
-  border: none;
-  background: radial-gradient(circle, #ffa600 0%, #ff8800 60%, #002b8e 100%);
+  border: 3px solid var(--accent);
+  background: radial-gradient(circle, var(--accent) 0%, var(--primary-bg) 90%);
   cursor: pointer;
   margin-top: 1rem;
+  animation: haloPulse 3s infinite;
+}
+
+@keyframes haloPulse {
+  0% { box-shadow: 0 0 0 0 rgba(253,185,19, 0.6); }
+  70% { box-shadow: 0 0 0 20px rgba(253,185,19, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(253,185,19, 0); }
 }
 
 .classic-chat {
@@ -87,24 +93,39 @@ body {
 
 #sendBtn {
   padding: 0.5rem 1rem;
-  background-color: #ffa600;
+  background-color: var(--accent);
   border: none;
   border-radius: 6px;
-  color: #002b8e;
+  color: var(--primary-bg);
   font-weight: bold;
   cursor: pointer;
+}
+
+.controls {
+  margin-top: 1.5rem;
+}
+
+.controls button {
+  background-color: var(--accent);
+  color: var(--primary-bg);
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 0.3rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 .upload-section {
   margin-top: 2rem;
 }
 
-.purchase-section {
-  margin-top: 2rem;
-}
-
-footer {
-  margin-top: 3rem;
-  font-size: 0.8rem;
-  color: #ccc;
+#uploadBtn {
+  background-color: var(--accent);
+  color: var(--primary-bg);
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
 }
