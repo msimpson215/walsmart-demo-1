@@ -2,30 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>WalSmart – Powered by VoxTalk™</title>
+  <title>Walmart – Powered by VoxTalk™</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="style.css">
-  <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
   <header class="navbar">
     <h1 class="brand">
-      <span class="brand-main">WalSmart</span>
+      <span class="brand-main">Walmart</span>
       <span class="brand-icon">✳</span>
-      <span class="powered-by">Powered by VoxTalk™</span>
     </h1>
+    <p class="powered-by">Powered by VoxTalk™</p>
   </header>
 
   <main class="container">
     <div class="portal-buttons">
-      <button id="cartBtn" class="portal">Cart</button>
-      <button id="infoBtn" class="portal">Info</button>
-      <button id="checkoutBtn" class="portal">Checkout</button>
+      <button id="cartBtn" class="portal">🛒 Cart</button>
+      <button id="infoBtn" class="portal">ℹ️ Info</button>
+      <button id="checkoutBtn" class="portal">💳 Checkout</button>
     </div>
 
     <div class="chat-section">
-      <h2>Talk to VoxTalk</h2>
+      <h2>Talk to Your AI Walmart Grocery Associate</h2>
       <button id="pttBtn" aria-pressed="false" class="halo-button"></button>
       <div class="hint">Click to Talk</div>
       <div id="answer"><div class="muted">Conversation will appear here.</div></div>
@@ -35,39 +34,47 @@
         <input id="userInput" placeholder="Type here to chat…" />
         <button id="sendBtn">Send</button>
       </div>
+
+      <div class="controls">
+        <button id="showConversation">Show Conversation</button>
+        <button id="contactHuman">Contact a Human</button>
+        <button id="stopBtn">Stop</button>
+      </div>
     </div>
 
     <div class="upload-section">
-      <label for="fileUpload">Upload grocery list:</label>
-      <input type="file" id="fileUpload" accept=".txt,.jpg,.png,.pdf">
-    </div>
-
-    <div class="purchase-section">
-      <button id="checkout">Buy Now</button>
+      <button id="uploadBtn">Upload Your Grocery List</button>
+      <input type="file" id="fileUpload" accept=".txt,.jpg,.png,.pdf" hidden>
     </div>
   </main>
 
-  <footer>
-    <p>©2025 WalSmart – All Rights Reserved.</p>
-  </footer>
-
   <script>
-    const stripe = Stripe("<%= STRIPE_PUBLIC_KEY %>");
-    const checkoutBtn = document.getElementById("checkout");
-
-    checkoutBtn.addEventListener("click", async () => {
-      const res = await fetch("/create-checkout-session", { method: "POST" });
-      const data = await res.json();
-      const result = await stripe.redirectToCheckout({ sessionId: data.id });
-      if (result.error) alert(result.error.message);
+    // --- Grocery upload button ---
+    document.getElementById('uploadBtn').addEventListener('click', () => {
+      document.getElementById('fileUpload').click();
     });
 
-    // --- VoxTalk Realtime / Classic Chat ---
-    const pttBtn   = document.getElementById("pttBtn");
+    // --- Classic chat handler (unchanged) ---
+    const inputEl = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
     const answerEl = document.getElementById("answer");
+
+    sendBtn.addEventListener("click", async () => {
+      const text = inputEl.value.trim();
+      if (!text) return;
+      const r = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      });
+      const data = await r.json();
+      answerEl.innerHTML += `<p>${data.reply}</p>`;
+      inputEl.value = "";
+    });
+
+    // --- Realtime voice (unchanged from Clone 11) ---
+    const pttBtn = document.getElementById("pttBtn");
     const remoteEl = document.getElementById("remote");
-    const inputEl  = document.getElementById("userInput");
-    const sendBtn  = document.getElementById("sendBtn");
 
     async function startSession() {
       const r = await fetch("/session");
@@ -89,21 +96,7 @@
       const answer = { type: "answer", sdp: await sdpResponse.text() };
       await pc.setRemoteDescription(answer);
     }
-
     pttBtn.addEventListener("click", startSession);
-
-    sendBtn.addEventListener("click", async () => {
-      const text = inputEl.value.trim();
-      if (!text) return;
-      const r = await fetch("/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text })
-      });
-      const data = await r.json();
-      answerEl.innerHTML = `<p>${data.reply}</p>`;
-      inputEl.value = "";
-    });
   </script>
 </body>
 </html>
