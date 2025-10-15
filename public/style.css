@@ -1,11 +1,11 @@
 :root{
-  --walmart-blue:#0071CE;
+  --walmart-blue:#004C91;
   --walmart-yellow:#FFC220;
-  --bg:#f5f6f7;
+  --bg:#eef1f5;
   --ink:#2e2e2e;
   --panel:#ffffff;
-  --halo:#0071CE;
-  --shadow:0 6px 20px rgba(0,0,0,0.2);
+  --halo:#004C91;
+  --shadow:0 6px 20px rgba(0,0,0,0.25);
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -20,13 +20,18 @@ body{
 /* Header */
 .topbar{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 10px;}
 .brand{
-  font-size:2rem;font-weight:700;color:var(--walmart-blue);
-  text-align:center;
+  font-size:2.2rem;font-weight:700;color:var(--walmart-blue);
+  text-align:center;letter-spacing:0.5px;position:relative;
 }
-.brand sup{font-size:0.6em;}
+.spark{
+  color:var(--walmart-yellow);
+  font-size:1.2em;
+  margin-left:4px;
+  text-shadow:0 0 6px rgba(255,194,32,0.6);
+}
 .brand .powered{
   display:block;font-size:0.8rem;font-weight:500;
-  color:#8AAAE5;letter-spacing:0.3px;margin-top:2px;
+  color:#6e8ed6;letter-spacing:0.3px;margin-top:4px;
 }
 .nav-buttons{display:flex;gap:10px;justify-content:center;margin-top:10px;}
 .pill{
@@ -50,7 +55,7 @@ body{
 }
 .halo-btn{
   position:relative;width:200px;height:200px;border-radius:50%;
-  border:none;background:radial-gradient(circle at 50% 40%,#0d4ea2 0%,#0071CE 80%);
+  border:none;background:radial-gradient(circle at 50% 40%,#0b336b 0%,#004C91 80%);
   box-shadow:inset 0 0 30px rgba(0,0,0,.4),0 8px 40px rgba(0,0,0,.3);
   cursor:pointer;
 }
@@ -87,7 +92,7 @@ body{
   background:var(--walmart-blue);color:#fff;border:none;
   border-radius:999px;padding:8px 20px;
 }
-.send-btn:hover{background:#005fa3;}
+.send-btn:hover{background:#003b77;}
 .thread{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
 
 /* Corner Buttons */
