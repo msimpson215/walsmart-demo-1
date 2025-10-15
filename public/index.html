@@ -2,24 +2,168 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>VoxTalk™ (Mothership)</title>
+  <title>WalSmart™</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
   <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
+  <!-- Header -->
   <header class="topbar">
-    <h1 class="brand">VoxTalk<sup>™</sup></h1>
+    <h1 class="brand">
+      WalSmart<sup>™</sup>
+      <span class="powered">powered by VoxTalk™</span>
+    </h1>
     <nav class="nav-buttons">
       <button class="pill ghost" onclick="openModal('cartModal')">🛒 Cart</button>
       <button class="pill ghost" onclick="openModal('infoModal')">ℹ️ Info</button>
       <button class="pill ghost" onclick="openModal('checkoutModal')">💳 Checkout</button>
     </nav>
+    <div class="upload-zone">
+      <label for="listUpload" class="pill ghost">📤 Upload Your Grocery List</label>
+      <input id="listUpload" type="file" accept=".txt,.csv" hidden />
+    </div>
   </header>
 
+  <!-- Halo -->
   <main class="stage">
     <button id="haloBtn" class="halo-btn">
       <div class="halo ring r1"></div>
       <div class="halo ring r2"></div>
       <div class="halo ring r3"></div>
-      <span class="halo-label">Click&nbsp;to&nbsp;Talk</span>
+      <span class="halo-label">Click to Talk</span>
+    </button>
+    <audio id="remote" autoplay playsinline></audio>
+    <button id="stopBtn" class="stop-btn hidden">⏸ Stop Voice</button>
+  </main>
+
+  <!-- Classic Chat -->
+  <section class="quiet">
+    <form id="quietForm" class="quiet-form" autocomplete="off">
+      <input id="quietInput" class="quiet-input" type="text"
+        placeholder="Classic Chat mode — type your question here..." />
+      <button id="sendBtn" class="pill send-btn" type="submit">Send</button>
+    </form>
+    <div id="thread" class="thread"></div>
+  </section>
+
+  <!-- Corner Buttons -->
+  <button id="printBtn" class="corner-btn left" onclick="window.print()">🗨 View Conversation</button>
+  <a id="humanBtn" class="corner-btn right" href="tel:18005551234">📞 Contact Human</a>
+
+  <!-- CART -->
+  <div id="cartModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Your Cart – WalSmart™</h2>
+      <table class="cart-table">
+        <tr><td>Organic Apples (2 lb)</td><td>$3.49</td></tr>
+        <tr><td>Windshield De-Icer – 1 gal</td><td>$12.99</td></tr>
+        <tr><td><strong>Total</strong></td><td><strong>$16.48</strong></td></tr>
+      </table>
+      <p class="note">Click Checkout to proceed or Close to continue shopping.</p>
+      <button class="pill" onclick="closeModal('cartModal')">Close</button>
+    </div>
+  </div>
+
+  <!-- CHECKOUT -->
+  <div id="checkoutModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Secure Checkout</h2>
+      <p>You’ll be redirected to Stripe (Test Mode).</p>
+      <button id="checkoutBtn" class="pill">Proceed to Payment</button>
+      <button class="pill ghost" onclick="closeModal('checkoutModal')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div id="infoModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>About WalSmart™</h2>
+      <p><strong>WalSmart™</strong> brings real-time voice shopping assistance through VoxTalk AI.  
+         Speak or type freely to get help any time.</p>
+      <button class="pill" onclick="closeModal('infoModal')">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // Modals
+    function openModal(id){document.getElementById(id).classList.remove('hidden');}
+    function closeModal(id){document.getElementById(id).classList.add('hidden');}
+    document.querySelectorAll('.modal').forEach(m =>
+      m.addEventListener('click', e => { if(e.target===m) m.classList.add('hidden'); })
+    );
+
+    // Voice
+    const haloBtn=document.getElementById("haloBtn");
+    const stopBtn=document.getElementById("stopBtn");
+    const remote=document.getElementById("remote");
+    let pc,localStream;
+    haloBtn.onclick=async()=>{
+      haloBtn.disabled=true;
+      haloBtn.querySelector(".halo-label").textContent="Connecting...";
+      const resp=await fetch("/session",{method:"POST"});
+      const data=await resp.json();
+      if(!data?.client_secret?.value)return;
+      pc=new RTCPeerConnection();
+      pc.ontrack=e=>remote.srcObject=e.streams[0];
+      localStream=await navigator.mediaDevices.getUserMedia({audio:true});
+      localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
+      const offer=await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      const r2=await fetch("https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",{
+        method:"POST",
+        headers:{
+          Authorization:`Bearer ${data.client_secret.value}`,
+          "Content-Type":"application/sdp"
+        },
+        body:offer.sdp
+      });
+      const answer={type:"answer",sdp:await r2.text()};
+      await pc.setRemoteDescription(answer);
+      haloBtn.querySelector(".halo-label").textContent="Live";
+      stopBtn.classList.remove("hidden");
+    };
+    stopBtn.onclick=()=>{
+      if(localStream) localStream.getTracks().forEach(t=>t.stop());
+      if(pc) pc.close();
+      haloBtn.disabled=false;
+      haloBtn.querySelector(".halo-label").textContent="Click to Talk";
+      stopBtn.classList.add("hidden");
+    };
+
+    // Classic Chat
+    const form=document.getElementById("quietForm");
+    const input=document.getElementById("quietInput");
+    const thread=document.getElementById("thread");
+    form.onsubmit=async(e)=>{
+      e.preventDefault();
+      const text=input.value.trim();
+      if(!text)return;
+      const userDiv=document.createElement("div");
+      userDiv.textContent="🧍 "+text;
+      thread.appendChild(userDiv);
+      input.value="";
+      const resp=await fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:text})});
+      const data=await resp.json();
+      const botDiv=document.createElement("div");
+      botDiv.textContent="🤖 "+(data.reply||"..."); 
+      thread.appendChild(botDiv);
+      thread.scrollTop=thread.scrollHeight;
+    };
+
+    // Stripe
+    const stripe=Stripe("pk_test_51SHCGpE44DdqctQ41sbQyxJ2Sjx4yh6SXV01ZSB34foIWPvl8OKCkfkYw9017PhK2tp0euZTaLjxvI1FOQ4uA8hm00ELjyCDK5");
+    document.getElementById("checkoutBtn").addEventListener("click",async()=>{
+      const resp=await fetch("/create-checkout-session",{method:"POST"});
+      const data=await resp.json();
+      window.location.href=data.url;
+    });
+
+    // Upload List
+    document.getElementById("listUpload").addEventListener("change",e=>{
+      const f=e.target.files[0];
+      if(f) alert("📄 Uploaded: "+f.name);
+    });
+  </script>
+</body>
+</html>
