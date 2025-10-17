@@ -26,7 +26,6 @@ app.post("/chat", async (req, res) => {
             role: "system",
             content:
               "You are VoxTalk. Respond in English (US) only. " +
-              "If the user speaks another language, politely say you can only respond in English for this demo. " +
               "Be clear, friendly, and concise."
           },
           { role: "user", content: prompt }
