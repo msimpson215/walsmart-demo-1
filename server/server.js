@@ -1,13 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
-import fetch from "node-fetch";
 
 dotenv.config();
 const app = express();
 app.use(express.static("public"));
 app.use(express.json({ limit: "2mb" }));
 
-// Text Chat (English-only)
+// TEXT CHAT
 app.post("/chat", async (req, res) => {
   try {
     const { prompt } = req.body || {};
@@ -49,7 +48,7 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-// Voice Session (English-only)
+// VOICE SESSION
 app.post("/session", async (_req, res) => {
   try {
     const r = await fetch("https://api.openai.com/v1/realtime/sessions", {
@@ -61,15 +60,10 @@ app.post("/session", async (_req, res) => {
       body: JSON.stringify({
         model: "gpt-4o-realtime-preview",
         voice: "alloy",
-        // Hard English lock:
         instructions:
-          "You are VoxTalk, a calm, friendly assistant for Walmart shoppers. " +
-          "Speak and respond in English (US) only. Never use any other language. " +
-          "If the user speaks a different language, say: 'For this demo, I can only respond in English.' " +
-          "Keep answers concise and helpful."
+          "You are VoxTalk, a calm, friendly assistant for Walmart shoppers. Speak and respond in English (US) only. Keep answers concise and helpful."
       })
     });
-
     const data = await r.json();
     res.json({ client_secret: data.client_secret });
   } catch (e) {
@@ -79,4 +73,6 @@ app.post("/session", async (_req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("✅ Walmart VoxTalk running on port " + PORT));
+app.listen(PORT, () =>
+  console.log("✅ Walmart VoxTalk running on port " + PORT)
+);
