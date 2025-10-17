@@ -8,16 +8,17 @@
 </head>
 <body>
   <header class="navbar">
-    <h1 class="brand">
-      <span class="brand-main">Walmart</span>
-      <span class="brand-icon" aria-label="spark">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
-             class="spark" role="img">
-          <path fill="#fdb913"
-            d="M50 0l8 32 26-16-16 26 32 8-32 8 16 26-26-16-8 32-8-32-26 16 16-26-32-8 32-8-16-26 26 16z"/>
-        </svg>
-      </span>
-    </h1>
+    <div class="brand-bar">
+      <h1 class="brand">
+        <span class="brand-main">Walmart</span>
+        <span class="brand-icon" aria-label="spark">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="spark" role="img">
+            <path fill="#fdb913"
+              d="M50 0l8 32 26-16-16 26 32 8-32 8 16 26-26-16-8 32-8-32-26 16 16-26-32-8 32-8-16-26 26 16z"/>
+          </svg>
+        </span>
+      </h1>
+    </div>
     <p class="tagline">
       <button id="taglineUpload" class="tagline-link">Upload your grocery list here</button>
     </p>
@@ -60,8 +61,7 @@
     <div class="modal-content">
       <h2>Your Cart – Walmart™</h2>
       <p>This opens Walmart’s real cart page.</p>
-      <button class="pill"
-        onclick="window.open('https://www.walmart.com/cart','_blank')">Go to Cart</button>
+      <button class="pill" onclick="window.open('https://www.walmart.com/cart','_blank')">Go to Cart</button>
       <button class="pill ghost" onclick="closeModal('cartModal')">Close</button>
     </div>
   </div>
