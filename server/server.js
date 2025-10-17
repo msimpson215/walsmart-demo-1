@@ -1,18 +1,18 @@
 import express from "express";
 import dotenv from "dotenv";
+import fetch from "node-fetch";
 
 dotenv.config();
 const app = express();
 app.use(express.static("public"));
 app.use(express.json({ limit: "2mb" }));
 
-// ---------- TEXT CHAT ----------
+// Text Chat (English-only)
 app.post("/chat", async (req, res) => {
   try {
     const { prompt } = req.body || {};
     if (!prompt) return res.status(400).json({ error: "Missing prompt" });
 
-    // use Node's built-in fetch (Node 18+ / 20+ / 22+)
     const r = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
@@ -49,7 +49,7 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-// ---------- VOICE SESSION ----------
+// Voice Session (English-only)
 app.post("/session", async (_req, res) => {
   try {
     const r = await fetch("https://api.openai.com/v1/realtime/sessions", {
@@ -61,6 +61,7 @@ app.post("/session", async (_req, res) => {
       body: JSON.stringify({
         model: "gpt-4o-realtime-preview",
         voice: "alloy",
+        // Hard English lock:
         instructions:
           "You are VoxTalk, a calm, friendly assistant for Walmart shoppers. " +
           "Speak and respond in English (US) only. Never use any other language. " +
@@ -77,8 +78,5 @@ app.post("/session", async (_req, res) => {
   }
 });
 
-// ---------- START SERVER ----------
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () =>
-  console.log("✅ Walmart VoxTalk running on port " + PORT)
-);
+app.listen(PORT, () => console.log("✅ Walmart VoxTalk running on port " + PORT));
