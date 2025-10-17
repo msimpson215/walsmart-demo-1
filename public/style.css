@@ -13,16 +13,45 @@ body{
   min-height:100vh;padding-bottom:72px;
 }
 
-/* Header */
-.navbar{margin-top:16px;text-align:center;}
-.brand-main{font-size:4.6rem;font-weight:900;letter-spacing:.4px;color:var(--blue);}
-.brand-icon{display:inline-block;vertical-align:top;margin-left:.25rem;position:relative;top:-0.4rem;}
+/* Walmart bar */
+.brand-bar{
+  background:var(--blue);
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:16px 0;
+}
+.brand{display:flex;align-items:center;gap:.25rem;}
+.brand-main{
+  font-size:4.6rem;
+  font-weight:900;
+  letter-spacing:.4px;
+  color:#fff;
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+.brand-icon{
+  display:inline-block;
+  vertical-align:middle;
+  margin-left:.3rem;
+  position:relative;
+  top:-0.05rem;
+}
 .spark{width:2.3rem;height:2.3rem;}
-.tagline{margin:.25rem 0 0;}
+.tagline{
+  margin:.5rem 0 0;
+  text-align:center;
+}
 .tagline-link{
-  background:none;border:none;padding:0;margin:0;
-  color:var(--yellow);font-size:.95rem;font-weight:700;
-  text-decoration:underline;cursor:pointer;
+  background:rgba(255,255,255,0.85);
+  border-radius:6px;
+  padding:2px 6px;
+  color:var(--yellow);
+  font-size:.95rem;
+  font-weight:700;
+  text-decoration:none;
+  border:none;
+  cursor:pointer;
 }
 
 /* Layout */
@@ -47,7 +76,16 @@ body{
 .ring.r2{inset:-20px;opacity:.6;animation-delay:.5s;}
 .ring.r3{inset:-30px;opacity:.4;animation-delay:1s;}
 @keyframes float{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-.stop-btn{margin-top:10px;background:#fdb913;color:#002b8e;border:none;padding:8px 16px;border-radius:999px;cursor:pointer;font-weight:600;}
+.stop-btn{
+  margin-top:18px;
+  background:#fdb913;
+  color:#002b8e;
+  border:none;
+  padding:8px 16px;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:600;
+}
 
 /* Chat */
 .quiet{width:90%;max-width:600px;margin-top:12px;}
