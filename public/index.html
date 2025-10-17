@@ -23,8 +23,6 @@
       <button class="portal" onclick="openModal('checkoutModal')">💳 Checkout</button>
     </div>
 
-    <!-- Removed duplicate upload button section -->
-
     <div class="stage">
       <button id="haloBtn" class="halo-btn">
         <div class="halo ring r1"></div>
@@ -38,7 +36,8 @@
 
     <section class="quiet">
       <form id="quietForm" class="quiet-form" autocomplete="off">
-        <input id="quietInput" class="quiet-input" type="text" placeholder="Classic chat — for quiet environments" />
+        <input id="quietInput" class="quiet-input" type="text"
+               placeholder="Classic chat — for quiet environments" />
         <button id="micBtn" class="pill mic-btn" type="button">🎤</button>
         <button id="sendBtn" class="pill send-btn" type="submit">Send</button>
       </form>
@@ -49,7 +48,7 @@
     <a class="corner-btn right" href="tel:18885551234">📞 Contact Human</a>
   </main>
 
-  <!-- 🛒 CART MODAL -->
+  <!-- CART -->
   <div id="cartModal" class="modal hidden">
     <div class="modal-content">
       <h2>Your Cart – Walmart™</h2>
@@ -59,7 +58,7 @@
     </div>
   </div>
 
-  <!-- ℹ️ INFO MODAL -->
+  <!-- INFO -->
   <div id="infoModal" class="modal hidden">
     <div class="modal-content">
       <h2>About Walmart & VoxTalk</h2>
@@ -68,7 +67,7 @@
     </div>
   </div>
 
-  <!-- 💳 CHECKOUT MODAL -->
+  <!-- CHECKOUT -->
   <div id="checkoutModal" class="modal hidden">
     <div class="modal-content">
       <h2>Secure Checkout</h2>
@@ -84,9 +83,10 @@
 
   <script>
   // Upload
-  const fileUpload=document.getElementById("fileUpload");
-  const taglineUpload=document.getElementById("taglineUpload");
-  if(taglineUpload) taglineUpload.onclick=()=>fileUpload.click();
+  const fileUpload=document.createElement("input");
+  fileUpload.type="file";fileUpload.hidden=true;
+  document.body.appendChild(fileUpload);
+  document.getElementById("taglineUpload").onclick=()=>fileUpload.click();
 
   // Modal Logic
   function openModal(id){document.getElementById(id).classList.remove("hidden");}
@@ -106,7 +106,7 @@
     voiceStatus.textContent="Connecting…";
     const resp=await fetch("/session",{method:"POST"});
     const data=await resp.json();
-    if(!data?.client_secret?.value){ voiceStatus.textContent="Error starting voice"; return; }
+    if(!data?.client_secret?.value){voiceStatus.textContent="Error";return;}
     pc=new RTCPeerConnection();
     pc.ontrack=e=>remote.srcObject=e.streams[0];
     localStream=await navigator.mediaDevices.getUserMedia({audio:true});
@@ -147,13 +147,13 @@
     input.value="";
     const resp=await fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:text})});
     const data=await resp.json();
-    const botDiv=document.createElement("div"); 
-    botDiv.textContent="🤖 "+(data.reply||"..."); 
+    const botDiv=document.createElement("div");
+    botDiv.textContent="🤖 "+(data.reply||"...");
     thread.appendChild(botDiv);
     thread.scrollTop=thread.scrollHeight;
   };
 
-  // Microphone inside chat (speech-to-text)
+  // Mic in chat (speech-to-text)
   const micBtn=document.getElementById("micBtn");
   if('webkitSpeechRecognition' in window){
     const recog=new webkitSpeechRecognition();
@@ -168,7 +168,6 @@
     };
   } else {
     micBtn.disabled=true;
-    micBtn.title="Speech recognition not supported";
   }
   </script>
 </body>
