@@ -23,17 +23,13 @@
       <button class="portal" onclick="openModal('checkoutModal')">💳 Checkout</button>
     </div>
 
-    <div class="upload-section">
-      <button id="uploadBtn" class="upload-btn">Upload Your Grocery List</button>
-      <input type="file" id="fileUpload" accept=".txt,.jpg,.png,.pdf" hidden>
-    </div>
+    <!-- Removed duplicate upload button section -->
 
     <div class="stage">
       <button id="haloBtn" class="halo-btn">
         <div class="halo ring r1"></div>
         <div class="halo ring r2"></div>
         <div class="halo ring r3"></div>
-        <span class="halo-label">Click to Talk</span>
       </button>
       <audio id="remote" autoplay playsinline></audio>
       <div id="voiceStatus" class="hint">Click to Talk</div>
@@ -41,9 +37,9 @@
     </div>
 
     <section class="quiet">
-      <p class="quiet-caption">Classic chat — for quiet environments</p>
       <form id="quietForm" class="quiet-form" autocomplete="off">
-        <input id="quietInput" class="quiet-input" type="text" placeholder="Type here to chat…" />
+        <input id="quietInput" class="quiet-input" type="text" placeholder="Classic chat — for quiet environments" />
+        <button id="micBtn" class="pill mic-btn" type="button">🎤</button>
         <button id="sendBtn" class="pill send-btn" type="submit">Send</button>
       </form>
       <div id="thread" class="thread"></div>
@@ -88,9 +84,7 @@
 
   <script>
   // Upload
-  const uploadBtn=document.getElementById("uploadBtn");
   const fileUpload=document.getElementById("fileUpload");
-  uploadBtn.onclick=()=>fileUpload.click();
   const taglineUpload=document.getElementById("taglineUpload");
   if(taglineUpload) taglineUpload.onclick=()=>fileUpload.click();
 
@@ -112,7 +106,7 @@
     voiceStatus.textContent="Connecting…";
     const resp=await fetch("/session",{method:"POST"});
     const data=await resp.json();
-    if(!data?.client_secret?.value)return;
+    if(!data?.client_secret?.value){ voiceStatus.textContent="Error starting voice"; return; }
     pc=new RTCPeerConnection();
     pc.ontrack=e=>remote.srcObject=e.streams[0];
     localStream=await navigator.mediaDevices.getUserMedia({audio:true});
@@ -158,6 +152,24 @@
     thread.appendChild(botDiv);
     thread.scrollTop=thread.scrollHeight;
   };
+
+  // Microphone inside chat (speech-to-text)
+  const micBtn=document.getElementById("micBtn");
+  if('webkitSpeechRecognition' in window){
+    const recog=new webkitSpeechRecognition();
+    recog.lang='en-US';
+    recog.onresult=e=>{
+      input.value=e.results[0][0].transcript;
+    };
+    micBtn.onclick=()=>{
+      recog.start();
+      micBtn.textContent='🎙️';
+      setTimeout(()=>micBtn.textContent='🎤',2000);
+    };
+  } else {
+    micBtn.disabled=true;
+    micBtn.title="Speech recognition not supported";
+  }
   </script>
 </body>
 </html>
