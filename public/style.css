@@ -13,48 +13,45 @@ body{
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:flex-start;
   min-height:100vh;
+  padding-bottom:72px;
 }
 
 /* Header */
 .navbar{margin-top:16px;text-align:center;}
-.brand-main{font-size:2.2rem;font-weight:700;color:var(--blue);}
-.brand-icon{font-size:2rem;color:var(--yellow);margin-left:4px;}
-.tagline{font-size:0.9rem;margin-top:4px;color:#555;}
+.brand-main{font-size:4.6rem;font-weight:900;letter-spacing:.4px;color:var(--blue);}
+.brand-icon{color:var(--yellow);font-size:2.2rem;margin-left:.25rem;vertical-align:baseline;}
+.tagline{margin:.25rem 0 0;}
+.tagline-link{
+  background:none;border:none;padding:0;margin:0;
+  color:var(--yellow);font-size:.95rem;font-weight:700;
+  text-decoration:underline;cursor:pointer;
+}
+.tagline-link:hover{opacity:.9;}
 
+/* Layout */
 .container{width:100%;max-width:640px;display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:12px;}
-
-/* Buttons */
 .portal-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
 .portal{
-  background:var(--blue);
-  color:#fff;
-  border:none;
-  padding:10px 20px;
-  font-weight:600;
-  cursor:pointer;
+  background:var(--blue);color:#fff;border:none;
+  padding:10px 20px;font-weight:600;cursor:pointer;
   box-shadow:0 3px 6px rgba(0,0,0,.2);
 }
 .portal:hover{background:#005fad;}
 .upload-btn{
-  background:var(--yellow);
-  border:none;
-  color:#002b8e;
-  padding:10px 20px;
-  font-weight:600;
-  cursor:pointer;
+  background:var(--yellow);border:none;color:#002b8e;
+  padding:10px 20px;font-weight:600;cursor:pointer;
   box-shadow:0 3px 6px rgba(0,0,0,.2);
+  filter:saturate(1.05) contrast(1.05);
 }
 .upload-section{margin-top:10px;}
 
-/* Halo button */
-.stage{display:flex;justify-content:center;align-items:center;position:relative;margin-top:20px;}
+/* Halo */
+.stage{display:flex;flex-direction:column;align-items:center;gap:.5rem;margin-top:14px;}
 .halo-btn{
   position:relative;width:180px;height:180px;border-radius:50%;
   border:none;background:radial-gradient(60% 60% at 50% 40%,#fdb913 0%,#002b8e 100%);
-  box-shadow:0 0 40px rgba(253,185,19,0.6);
-  cursor:pointer;
+  box-shadow:0 0 40px rgba(253,185,19,0.6);cursor:pointer;
 }
 .halo-label{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-weight:700;font-size:1rem;color:#fff;text-align:center;}
 .ring{position:absolute;inset:-10px;border-radius:50%;border:3px solid rgba(253,185,19,.5);animation:float 3s infinite;}
@@ -62,9 +59,11 @@ body{
 .ring.r3{inset:-30px;opacity:.4;animation-delay:1s;}
 @keyframes float{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 .stop-btn{margin-top:10px;background:#fdb913;color:#002b8e;border:none;padding:8px 16px;border-radius:999px;cursor:pointer;font-weight:600;}
+.hint{font-size:.95rem;margin-top:4px;color:#002b8e;opacity:.95;}
 
 /* Classic chat */
-.quiet{width:90%;max-width:600px;margin-top:20px;}
+.quiet{width:90%;max-width:600px;margin-top:12px;}
+.quiet-caption{font-size:.85rem;color:#555;margin:4px 0 8px;}
 .quiet-form{display:flex;gap:8px;border:1px solid #ccc;border-radius:12px;padding:8px;background:#f9f9f9;}
 .quiet-input{flex:1;border:none;outline:none;font-size:1rem;}
 .send-btn{background:var(--blue);color:#fff;border:none;border-radius:999px;padding:8px 16px;font-weight:600;cursor:pointer;}
@@ -72,12 +71,12 @@ body{
 .thread{margin-top:10px;min-height:60px;display:flex;flex-direction:column;gap:4px;}
 
 /* Corner buttons */
-.corner-btn{position:fixed;bottom:10px;background:#002b8e;color:#fff;border:none;padding:8px 12px;border-radius:999px;cursor:pointer;text-decoration:none;font-size:0.85rem;}
+.corner-btn{position:fixed;bottom:10px;background:#002b8e;color:#fff;border:none;padding:8px 12px;border-radius:999px;cursor:pointer;text-decoration:none;font-size:0.85rem;z-index:6;}
 .corner-btn.left{left:12px;}
 .corner-btn.right{right:12px;}
 
 /* Footer */
-.footer{text-align:center;margin:60px 0 20px 0;font-size:0.9rem;color:#555;}
+.footer{position:fixed;left:0;right:0;bottom:0;background:#fff;color:#555;border-top:1px solid #e6e6e6;text-align:center;padding:.6rem 0;font-size:.9rem;z-index:5;}
 
 /* Modal */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:100;}
