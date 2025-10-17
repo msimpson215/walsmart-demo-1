@@ -15,7 +15,7 @@
   </header>
 
   <main class="container">
-    <!-- Top Buttons -->
+    <!-- Main navigation -->
     <div class="portal-row">
       <button id="cartBtn" class="portal">🛒 Cart</button>
       <button id="infoBtn" class="portal">ℹ️ Info</button>
@@ -28,7 +28,7 @@
       <input type="file" id="fileUpload" accept=".txt,.jpg,.png,.pdf" hidden>
     </div>
 
-    <!-- Chat -->
+    <!-- Chat / Voice -->
     <div class="chat-section">
       <h2>Let Our AI Grocery Associate Help You</h2>
       <div class="voice-wrap">
@@ -36,7 +36,6 @@
         <div id="voiceStatus" class="hint">Click to Talk</div>
         <button id="pauseBtn" class="pause-btn">Pause</button>
       </div>
-
       <audio id="remote" autoplay playsinline></audio>
 
       <div id="answer" class="transcript"></div>
@@ -52,14 +51,14 @@
       </div>
     </div>
 
-    <!-- Panels -->
+    <!-- Panels (hidden until clicked) -->
     <section id="cartPanel" class="panel hidden">
       <h3>Cart</h3>
-      <p>Items will appear here.</p>
+      <p>(Cart content will appear here)</p>
     </section>
     <section id="infoPanel" class="panel hidden">
       <h3>Information</h3>
-      <p>Store and product info will appear here.</p>
+      <p>Product and store information will appear here.</p>
     </section>
     <section id="checkoutPanel" class="panel hidden">
       <h3>Checkout</h3>
@@ -82,3 +81,82 @@
   <footer class="footer">
     © 2025 • Powered by VoxTalk — A Comfortable AI Experience
   </footer>
+
+  <script>
+    /* Upload */
+    const uploadBtn=document.getElementById("uploadBtn");
+    const fileUpload=document.getElementById("fileUpload");
+    uploadBtn.onclick=()=>fileUpload.click();
+
+    /* Panels (exact Clone 11 logic) */
+    function showPanel(id){
+      document.querySelectorAll(".panel").forEach(p=>p.classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+      console.log("✅ opened:",id);
+    }
+    document.getElementById("cartBtn").onclick=()=>showPanel("cartPanel");
+    document.getElementById("infoBtn").onclick=()=>showPanel("infoPanel");
+    document.getElementById("checkoutBtn").onclick=()=>showPanel("checkoutPanel");
+
+    /* Classic Chat */
+    const inputEl=document.getElementById("userInput");
+    const sendBtn=document.getElementById("sendBtn");
+    const answerEl=document.getElementById("answer");
+    function append(role,text){
+      const p=document.createElement("p");
+      p.className=role;p.textContent=text;
+      answerEl.appendChild(p);answerEl.scrollTop=answerEl.scrollHeight;
+    }
+    async function sendChat(){
+      const text=inputEl.value.trim();if(!text)return;
+      append("user",text);inputEl.value="";
+      try{
+        const r=await fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text})});
+        const d=await r.json();append("assistant",d.reply||"");
+      }catch{append("error","Chat unavailable.");}
+    }
+    sendBtn.onclick=sendChat;
+    inputEl.onkeydown=e=>{if(e.key==="Enter")sendChat();};
+
+    /* Voice */
+    const pttBtn=document.getElementById("pttBtn");
+    const remote=document.getElementById("remote");
+    const voiceStatus=document.getElementById("voiceStatus");
+    let pc,micStream;
+    async function startSession(){
+      voiceStatus.textContent="Connecting…";
+      try{
+        const r=await fetch("/session");
+        const data=await r.json();
+        pc=new RTCPeerConnection();
+        micStream=await navigator.mediaDevices.getUserMedia({audio:true});
+        micStream.getTracks().forEach(t=>pc.addTrack(t,micStream));
+        pc.ontrack=e=>remote.srcObject=e.streams[0];
+        const offer=await pc.createOffer();await pc.setLocalDescription(offer);
+        const sdpRes=await fetch("https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",
+          {method:"POST",headers:{Authorization:`Bearer ${data.client_secret.value}`,"Content-Type":"application/sdp"},body:offer.sdp});
+        const answer={type:"answer",sdp:await sdpRes.text()};
+        await pc.setRemoteDescription(answer);
+        voiceStatus.textContent="Live";
+      }catch(e){voiceStatus.textContent="Unavailable";append("error","Voice unavailable.");}
+    }
+    pttBtn.onclick=startSession;
+
+    /* Pause */
+    const pauseBtn=document.getElementById("pauseBtn");
+    pauseBtn.onclick=()=>{
+      if(micStream){
+        const track=micStream.getAudioTracks()[0];
+        track.enabled=!track.enabled;
+        pauseBtn.textContent=track.enabled?"Pause":"Resume";
+      }
+    };
+
+    /* Controls */
+    document.getElementById("showConversation").onclick=()=>window.print();
+    const contactPanel=document.getElementById("contactPanel");
+    document.getElementById("contactHuman").onclick=()=>contactPanel.classList.remove("hidden");
+    document.getElementById("contactClose").onclick=()=>contactPanel.classList.add("hidden");
+  </script>
+</body>
+</html>
