@@ -12,9 +12,14 @@
       <h1 class="brand">
         <span class="brand-main">Walmart</span>
         <span class="brand-icon" aria-label="spark">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="spark" role="img">
-            <path fill="#fdb913"
-              d="M50 0l8 32 26-16-16 26 32 8-32 8 16 26-26-16-8 32-8-32-26 16 16-26-32-8 32-8-16-26 26 16z"/>
+          <!-- 6-ray Walmart spark -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="spark" role="img">
+            <path fill="#fdb913" d="M31 0h2v22h-2z"/>
+            <path fill="#fdb913" transform="rotate(60 32 32)" d="M31 0h2v22h-2z"/>
+            <path fill="#fdb913" transform="rotate(120 32 32)" d="M31 0h2v22h-2z"/>
+            <path fill="#fdb913" transform="rotate(180 32 32)" d="M31 0h2v22h-2z"/>
+            <path fill="#fdb913" transform="rotate(240 32 32)" d="M31 0h2v22h-2z"/>
+            <path fill="#fdb913" transform="rotate(300 32 32)" d="M31 0h2v22h-2z"/>
           </svg>
         </span>
       </h1>
@@ -28,7 +33,7 @@
     <div class="portal-row">
       <button class="portal" onclick="openModal('cartModal')">🛒 Cart</button>
       <button class="portal" onclick="openModal('infoModal')">ℹ️ Info</button>
-      <button class="portal" onclick="window.open('https://www.walmart.com/checkout','_blank')">💳 Checkout</button>
+      <button class="portal" onclick="window.open('https://www.walmart.com/grocery','_blank')">💳 Checkout</button>
     </div>
 
     <div class="stage">
@@ -61,7 +66,8 @@
     <div class="modal-content">
       <h2>Your Cart – Walmart™</h2>
       <p>This opens Walmart’s real cart page.</p>
-      <button class="pill" onclick="window.open('https://www.walmart.com/cart','_blank')">Go to Cart</button>
+      <button class="pill"
+        onclick="window.open('https://www.walmart.com/cart','_blank')">Go to Cart</button>
       <button class="pill ghost" onclick="closeModal('cartModal')">Close</button>
     </div>
   </div>
