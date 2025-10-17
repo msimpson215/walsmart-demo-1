@@ -4,159 +4,155 @@
   <meta charset="utf-8" />
   <title>Walmart ✳ — VoxTalk™</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="navbar">
-    <h1 class="brand">
-      <span class="brand-main">Walmart</span><span class="brand-icon">✳</span>
-    </h1>
+    <h1 class="brand"><span class="brand-main">Walmart</span><span class="brand-icon">✳</span></h1>
     <p class="tagline">Your Neighborhood Grocery Store</p>
   </header>
 
   <main class="container">
-    <!-- Main navigation -->
+    <!-- top buttons -->
     <div class="portal-row">
-      <button id="cartBtn" class="portal">🛒 Cart</button>
-      <button id="infoBtn" class="portal">ℹ️ Info</button>
-      <button id="checkoutBtn" class="portal">💳 Checkout</button>
+      <button class="portal" onclick="openModal('cartModal')">🛒 Cart</button>
+      <button class="portal" onclick="openModal('infoModal')">ℹ️ Info</button>
+      <button class="portal" onclick="openModal('checkoutModal')">💳 Checkout</button>
     </div>
 
-    <!-- Upload -->
+    <!-- upload -->
     <div class="upload-section">
       <button id="uploadBtn" class="upload-btn">Upload Your Grocery List</button>
       <input type="file" id="fileUpload" accept=".txt,.jpg,.png,.pdf" hidden>
     </div>
 
-    <!-- Chat / Voice -->
-    <div class="chat-section">
-      <h2>Let Our AI Grocery Associate Help You</h2>
-      <div class="voice-wrap">
-        <button id="pttBtn" class="halo-button"></button>
-        <div id="voiceStatus" class="hint">Click to Talk</div>
-        <button id="pauseBtn" class="pause-btn">Pause</button>
-      </div>
+    <!-- halo mic -->
+    <div class="stage">
+      <button id="haloBtn" class="halo-btn">
+        <div class="halo ring r1"></div>
+        <div class="halo ring r2"></div>
+        <div class="halo ring r3"></div>
+        <span class="halo-label">Click to Talk</span>
+      </button>
       <audio id="remote" autoplay playsinline></audio>
-
-      <div id="answer" class="transcript"></div>
-
-      <div class="classic-chat">
-        <input id="userInput" placeholder="Type here to chat…" />
-        <button id="sendBtn">Send</button>
-      </div>
-
-      <div class="controls">
-        <button id="showConversation">Show Conversation</button>
-        <button id="contactHuman">Contact a Human</button>
-      </div>
+      <button id="stopBtn" class="stop-btn hidden">Pause Voice</button>
     </div>
 
-    <!-- Panels (hidden until clicked) -->
-    <section id="cartPanel" class="panel hidden">
-      <h3>Cart</h3>
-      <p>(Cart content will appear here)</p>
-    </section>
-    <section id="infoPanel" class="panel hidden">
-      <h3>Information</h3>
-      <p>Product and store information will appear here.</p>
-    </section>
-    <section id="checkoutPanel" class="panel hidden">
-      <h3>Checkout</h3>
-      <p>Checkout flow coming soon.</p>
+    <!-- classic chat -->
+    <section class="quiet">
+      <form id="quietForm" class="quiet-form" autocomplete="off">
+        <input id="quietInput" class="quiet-input" type="text" placeholder="Type here to chat…" />
+        <button id="sendBtn" class="pill send-btn" type="submit">Send</button>
+      </form>
+      <div id="thread" class="thread"></div>
     </section>
 
-    <!-- Contact -->
-    <section id="contactPanel" class="contact-panel hidden">
-      <div class="contact-header">
-        <span>Need a human?</span>
-        <button id="contactClose" class="contact-close">×</button>
-      </div>
-      <div class="contact-body">
-        <p>Email: <a href="mailto:support@example.com">support@example.com</a></p>
-        <p>Phone: <a href="tel:+18885551234">+1 (888) 555-1234</a></p>
-      </div>
-    </section>
+    <button class="corner-btn left" onclick="window.print()">🖨 Show Conversation</button>
+    <a class="corner-btn right" href="tel:18885551234">📞 Contact Human</a>
   </main>
+
+  <!-- 🛒 Cart Modal -->
+  <div id="cartModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Your Cart – Walmart™</h2>
+      <p>This opens Walmart’s real cart page.</p>
+      <button class="pill" onclick="window.open('https://www.walmart.com/cart','_blank')">Go to Cart</button>
+      <button class="pill ghost" onclick="closeModal('cartModal')">Close</button>
+    </div>
+  </div>
+
+  <!-- ℹ️ Info Modal -->
+  <div id="infoModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>About Walmart & VoxTalk</h2>
+      <p><strong>VoxTalk™ AI</strong> helps customers shop confidently — voice or text.</p>
+      <button class="pill ghost" onclick="closeModal('infoModal')">Close</button>
+    </div>
+  </div>
+
+  <!-- 💳 Checkout Modal -->
+  <div id="checkoutModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Secure Checkout</h2>
+      <p>You’ll be redirected to Walmart Checkout.</p>
+      <button class="pill" onclick="window.open('https://www.walmart.com/checkout','_blank')">Proceed to Checkout</button>
+      <button class="pill ghost" onclick="closeModal('checkoutModal')">Cancel</button>
+    </div>
+  </div>
 
   <footer class="footer">
     © 2025 • Powered by VoxTalk — A Comfortable AI Experience
   </footer>
 
   <script>
-    /* Upload */
-    const uploadBtn=document.getElementById("uploadBtn");
-    const fileUpload=document.getElementById("fileUpload");
-    uploadBtn.onclick=()=>fileUpload.click();
+  /* Upload */
+  const uploadBtn=document.getElementById("uploadBtn");
+  const fileUpload=document.getElementById("fileUpload");
+  uploadBtn.onclick=()=>fileUpload.click();
 
-    /* Panels (exact Clone 11 logic) */
-    function showPanel(id){
-      document.querySelectorAll(".panel").forEach(p=>p.classList.add("hidden"));
-      document.getElementById(id).classList.remove("hidden");
-      console.log("✅ opened:",id);
-    }
-    document.getElementById("cartBtn").onclick=()=>showPanel("cartPanel");
-    document.getElementById("infoBtn").onclick=()=>showPanel("infoPanel");
-    document.getElementById("checkoutBtn").onclick=()=>showPanel("checkoutPanel");
+  /* --- Modal Logic (Clone 11) --- */
+  function openModal(id){document.getElementById(id).classList.remove("hidden");}
+  function closeModal(id){document.getElementById(id).classList.add("hidden");}
+  document.querySelectorAll(".modal").forEach(m=>{
+    m.addEventListener("click",e=>{if(e.target===m)m.classList.add("hidden");});
+  });
 
-    /* Classic Chat */
-    const inputEl=document.getElementById("userInput");
-    const sendBtn=document.getElementById("sendBtn");
-    const answerEl=document.getElementById("answer");
-    function append(role,text){
-      const p=document.createElement("p");
-      p.className=role;p.textContent=text;
-      answerEl.appendChild(p);answerEl.scrollTop=answerEl.scrollHeight;
-    }
-    async function sendChat(){
-      const text=inputEl.value.trim();if(!text)return;
-      append("user",text);inputEl.value="";
-      try{
-        const r=await fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text})});
-        const d=await r.json();append("assistant",d.reply||"");
-      }catch{append("error","Chat unavailable.");}
-    }
-    sendBtn.onclick=sendChat;
-    inputEl.onkeydown=e=>{if(e.key==="Enter")sendChat();};
+  /* --- Voice Mic (Clone 11 baseline) --- */
+  const haloBtn=document.getElementById("haloBtn");
+  const stopBtn=document.getElementById("stopBtn");
+  const remote=document.getElementById("remote");
+  let pc,localStream;
+  haloBtn.onclick=async()=>{
+    haloBtn.disabled=true;
+    haloBtn.querySelector(".halo-label").textContent="Connecting…";
+    const resp=await fetch("/session",{method:"POST"});
+    const data=await resp.json();
+    if(!data?.client_secret?.value)return;
+    pc=new RTCPeerConnection();
+    pc.ontrack=e=>remote.srcObject=e.streams[0];
+    localStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
+    const offer=await pc.createOffer();await pc.setLocalDescription(offer);
+    const r2=await fetch("https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",{
+      method:"POST",
+      headers:{
+        Authorization:`Bearer ${data.client_secret.value}`,
+        "Content-Type":"application/sdp"
+      },
+      body:offer.sdp
+    });
+    const answer={type:"answer",sdp:await r2.text()};
+    await pc.setRemoteDescription(answer);
+    haloBtn.querySelector(".halo-label").textContent="Live";
+    stopBtn.classList.remove("hidden");
+  };
+  stopBtn.onclick=()=>{
+    if(localStream)localStream.getTracks().forEach(t=>t.stop());
+    if(pc)pc.close();
+    haloBtn.disabled=false;
+    haloBtn.querySelector(".halo-label").textContent="Click to Talk";
+    stopBtn.classList.add("hidden");
+  };
 
-    /* Voice */
-    const pttBtn=document.getElementById("pttBtn");
-    const remote=document.getElementById("remote");
-    const voiceStatus=document.getElementById("voiceStatus");
-    let pc,micStream;
-    async function startSession(){
-      voiceStatus.textContent="Connecting…";
-      try{
-        const r=await fetch("/session");
-        const data=await r.json();
-        pc=new RTCPeerConnection();
-        micStream=await navigator.mediaDevices.getUserMedia({audio:true});
-        micStream.getTracks().forEach(t=>pc.addTrack(t,micStream));
-        pc.ontrack=e=>remote.srcObject=e.streams[0];
-        const offer=await pc.createOffer();await pc.setLocalDescription(offer);
-        const sdpRes=await fetch("https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",
-          {method:"POST",headers:{Authorization:`Bearer ${data.client_secret.value}`,"Content-Type":"application/sdp"},body:offer.sdp});
-        const answer={type:"answer",sdp:await sdpRes.text()};
-        await pc.setRemoteDescription(answer);
-        voiceStatus.textContent="Live";
-      }catch(e){voiceStatus.textContent="Unavailable";append("error","Voice unavailable.");}
-    }
-    pttBtn.onclick=startSession;
-
-    /* Pause */
-    const pauseBtn=document.getElementById("pauseBtn");
-    pauseBtn.onclick=()=>{
-      if(micStream){
-        const track=micStream.getAudioTracks()[0];
-        track.enabled=!track.enabled;
-        pauseBtn.textContent=track.enabled?"Pause":"Resume";
-      }
-    };
-
-    /* Controls */
-    document.getElementById("showConversation").onclick=()=>window.print();
-    const contactPanel=document.getElementById("contactPanel");
-    document.getElementById("contactHuman").onclick=()=>contactPanel.classList.remove("hidden");
-    document.getElementById("contactClose").onclick=()=>contactPanel.classList.add("hidden");
+  /* --- Classic Chat (Clone 11 baseline) --- */
+  const form=document.getElementById("quietForm");
+  const input=document.getElementById("quietInput");
+  const thread=document.getElementById("thread");
+  form.onsubmit=async(e)=>{
+    e.preventDefault();
+    const text=input.value.trim();
+    if(!text)return;
+    const userDiv=document.createElement("div");
+    userDiv.textContent="🧍 "+text;
+    thread.appendChild(userDiv);
+    input.value="";
+    const resp=await fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:text})});
+    const data=await resp.json();
+    const botDiv=document.createElement("div");
+    botDiv.textContent="🤖 "+(data.reply||"..."); 
+    thread.appendChild(botDiv);
+    thread.scrollTop=thread.scrollHeight;
+  };
   </script>
 </body>
 </html>
