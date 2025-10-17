@@ -8,25 +8,26 @@
 </head>
 <body>
   <header class="navbar">
-    <h1 class="brand"><span class="brand-main">Walmart</span><span class="brand-icon">✳</span></h1>
-    <p class="tagline">Your Neighborhood Grocery Store</p>
+    <h1 class="brand">
+      <span class="brand-main">Walmart</span><span class="brand-icon">✳</span>
+    </h1>
+    <p class="tagline">
+      <button id="taglineUpload" class="tagline-link">Upload your grocery list here</button>
+    </p>
   </header>
 
   <main class="container">
-    <!-- top buttons -->
     <div class="portal-row">
       <button class="portal" onclick="openModal('cartModal')">🛒 Cart</button>
       <button class="portal" onclick="openModal('infoModal')">ℹ️ Info</button>
       <button class="portal" onclick="openModal('checkoutModal')">💳 Checkout</button>
     </div>
 
-    <!-- upload -->
     <div class="upload-section">
       <button id="uploadBtn" class="upload-btn">Upload Your Grocery List</button>
       <input type="file" id="fileUpload" accept=".txt,.jpg,.png,.pdf" hidden>
     </div>
 
-    <!-- halo mic -->
     <div class="stage">
       <button id="haloBtn" class="halo-btn">
         <div class="halo ring r1"></div>
@@ -35,11 +36,12 @@
         <span class="halo-label">Click to Talk</span>
       </button>
       <audio id="remote" autoplay playsinline></audio>
+      <div id="voiceStatus" class="hint">Click to Talk</div>
       <button id="stopBtn" class="stop-btn hidden">Pause Voice</button>
     </div>
 
-    <!-- classic chat -->
     <section class="quiet">
+      <p class="quiet-caption">Classic chat — for quiet environments</p>
       <form id="quietForm" class="quiet-form" autocomplete="off">
         <input id="quietInput" class="quiet-input" type="text" placeholder="Type here to chat…" />
         <button id="sendBtn" class="pill send-btn" type="submit">Send</button>
@@ -51,7 +53,7 @@
     <a class="corner-btn right" href="tel:18885551234">📞 Contact Human</a>
   </main>
 
-  <!-- 🛒 Cart Modal -->
+  <!-- 🛒 CART MODAL -->
   <div id="cartModal" class="modal hidden">
     <div class="modal-content">
       <h2>Your Cart – Walmart™</h2>
@@ -61,7 +63,7 @@
     </div>
   </div>
 
-  <!-- ℹ️ Info Modal -->
+  <!-- ℹ️ INFO MODAL -->
   <div id="infoModal" class="modal hidden">
     <div class="modal-content">
       <h2>About Walmart & VoxTalk</h2>
@@ -70,7 +72,7 @@
     </div>
   </div>
 
-  <!-- 💳 Checkout Modal -->
+  <!-- 💳 CHECKOUT MODAL -->
   <div id="checkoutModal" class="modal hidden">
     <div class="modal-content">
       <h2>Secure Checkout</h2>
@@ -85,26 +87,29 @@
   </footer>
 
   <script>
-  /* Upload */
+  // Upload
   const uploadBtn=document.getElementById("uploadBtn");
   const fileUpload=document.getElementById("fileUpload");
   uploadBtn.onclick=()=>fileUpload.click();
+  const taglineUpload=document.getElementById("taglineUpload");
+  if(taglineUpload) taglineUpload.onclick=()=>fileUpload.click();
 
-  /* --- Modal Logic (Clone 11) --- */
+  // Modal Logic
   function openModal(id){document.getElementById(id).classList.remove("hidden");}
   function closeModal(id){document.getElementById(id).classList.add("hidden");}
   document.querySelectorAll(".modal").forEach(m=>{
     m.addEventListener("click",e=>{if(e.target===m)m.classList.add("hidden");});
   });
 
-  /* --- Voice Mic (Clone 11 baseline) --- */
+  // Voice Mic
   const haloBtn=document.getElementById("haloBtn");
   const stopBtn=document.getElementById("stopBtn");
   const remote=document.getElementById("remote");
+  const voiceStatus=document.getElementById("voiceStatus");
   let pc,localStream;
   haloBtn.onclick=async()=>{
     haloBtn.disabled=true;
-    haloBtn.querySelector(".halo-label").textContent="Connecting…";
+    voiceStatus.textContent="Connecting…";
     const resp=await fetch("/session",{method:"POST"});
     const data=await resp.json();
     if(!data?.client_secret?.value)return;
@@ -123,18 +128,18 @@
     });
     const answer={type:"answer",sdp:await r2.text()};
     await pc.setRemoteDescription(answer);
-    haloBtn.querySelector(".halo-label").textContent="Live";
+    voiceStatus.textContent="Live";
     stopBtn.classList.remove("hidden");
   };
   stopBtn.onclick=()=>{
     if(localStream)localStream.getTracks().forEach(t=>t.stop());
     if(pc)pc.close();
     haloBtn.disabled=false;
-    haloBtn.querySelector(".halo-label").textContent="Click to Talk";
+    voiceStatus.textContent="Click to Talk";
     stopBtn.classList.add("hidden");
   };
 
-  /* --- Classic Chat (Clone 11 baseline) --- */
+  // Classic Chat
   const form=document.getElementById("quietForm");
   const input=document.getElementById("quietInput");
   const thread=document.getElementById("thread");
@@ -148,7 +153,7 @@
     input.value="";
     const resp=await fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:text})});
     const data=await resp.json();
-    const botDiv=document.createElement("div");
+    const botDiv=document.createElement("div"); 
     botDiv.textContent="🤖 "+(data.reply||"..."); 
     thread.appendChild(botDiv);
     thread.scrollTop=thread.scrollHeight;
