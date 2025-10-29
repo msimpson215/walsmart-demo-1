@@ -2,171 +2,101 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Walmart ✳ — VoxTalk™</title>
+  <title>Walmart | Voice Assistant (Demo)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    :root{--blue:#0071ce;--yellow:#fdb913;}
+    *{box-sizing:border-box}
+    body{
+      margin:0;background:#f6f7f8;
+      font-family:Segoe UI, Roboto, Arial, sans-serif;
+      display:flex;flex-direction:column;align-items:center;
+    }
+    /* Static mock */
+    .frame{width:100%;max-width:1280px;margin:0 auto;position:relative}
+    .mock{width:100%;height:auto;display:block;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+    /* Walmart-styled call-to-action */
+    .cta-wrap{display:flex;justify-content:center}
+    .cta{
+      margin:-3.25rem 0 1.5rem;
+      background:var(--blue); color:#fff; border:none; border-radius:999px;
+      padding:12px 20px; font-weight:800; font-size:1.05rem; cursor:pointer;
+      box-shadow:0 4px 12px rgba(0,0,0,.25);
+      display:inline-flex; align-items:center; gap:.5rem;
+    }
+    .spark{
+      width:18px; height:18px; display:inline-block; vertical-align:middle;
+      background: conic-gradient(from 0deg at 50% 50%, var(--yellow) 0 360deg);
+      -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\'0 0 64 64\'><path d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(60 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(120 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(180 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(240 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(300 32 32)\' d=\'M31 0h2v22h-2z\'/></svg>') center/contain no-repeat;
+              mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\'0 0 64 64\'><path d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(60 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(120 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(180 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(240 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(300 32 32)\' d=\'M31 0h2v22h-2z\'/></svg>') center/contain no-repeat;
+    }
+    .cta:hover{background:#005fad}
+
+    /* Overlay */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(2px)}
+    .sheet{
+      width:min(820px,92vw); height:min(88vh,900px);
+      background:#fff; border-radius:16px; overflow:hidden;
+      box-shadow:0 14px 48px rgba(0,0,0,.45); display:flex; flex-direction:column;
+    }
+    .sheet-head{
+      background:var(--blue); color:#fff; padding:10px 14px; display:flex; align-items:center; gap:.6rem; font-weight:800;
+    }
+    .sheet-head .spark{filter:drop-shadow(0 0 4px rgba(0,0,0,.2)); background:var(--yellow)}
+    .sheet-body{flex:1; min-height:0}
+    .sheet-body iframe{width:100%; height:100%; border:0}
+    .hint{color:#ddd; font-size:.9rem; text-align:center; margin-top:8px}
+  </style>
 </head>
 <body>
-  <header class="navbar">
-    <div class="brand-bar">
-      <h1 class="brand">
-        <span class="brand-main">Walmart</span>
-        <span class="brand-icon" aria-label="spark">
-          <!-- 6-ray Walmart spark -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="spark" role="img">
-            <path fill="#fdb913" d="M31 0h2v22h-2z"/>
-            <path fill="#fdb913" transform="rotate(60 32 32)" d="M31 0h2v22h-2z"/>
-            <path fill="#fdb913" transform="rotate(120 32 32)" d="M31 0h2v22h-2z"/>
-            <path fill="#fdb913" transform="rotate(180 32 32)" d="M31 0h2v22h-2z"/>
-            <path fill="#fdb913" transform="rotate(240 32 32)" d="M31 0h2v22h-2z"/>
-            <path fill="#fdb913" transform="rotate(300 32 32)" d="M31 0h2v22h-2z"/>
-          </svg>
-        </span>
-      </h1>
-    </div>
-    <p class="tagline">
-      <button id="taglineUpload" class="tagline-link">Upload your grocery list here</button>
-    </p>
-  </header>
 
-  <main class="container">
-    <div class="portal-row">
-      <button class="portal" onclick="openModal('cartModal')">🛒 Cart</button>
-      <button class="portal" onclick="openModal('infoModal')">ℹ️ Info</button>
-      <button class="portal" onclick="window.open('https://www.walmart.com/grocery','_blank')">💳 Checkout</button>
-    </div>
-
-    <div class="stage">
-      <button id="haloBtn" class="halo-btn">
-        <div class="halo ring r1"></div>
-        <div class="halo ring r2"></div>
-        <div class="halo ring r3"></div>
-        <span id="haloLabel" class="halo-label">Click to Talk</span>
-      </button>
-      <audio id="remote" autoplay playsinline></audio>
-      <button id="stopBtn" class="stop-btn hidden">Pause Voice</button>
-    </div>
-
-    <section class="quiet">
-      <form id="quietForm" class="quiet-form" autocomplete="off">
-        <input id="quietInput" class="quiet-input"
-               type="text" placeholder="Classic chat — for quiet environments" />
-        <button id="micBtn" class="pill mic-btn" type="button">🎤</button>
-        <button id="sendBtn" class="pill send-btn" type="submit">Send</button>
-      </form>
-      <div id="thread" class="thread"></div>
-    </section>
-
-    <button class="corner-btn left" onclick="window.print()">🖨 Show Conversation</button>
-    <a class="corner-btn right" href="tel:18885551234">📞 Contact Human</a>
-  </main>
-
-  <!-- CART -->
-  <div id="cartModal" class="modal hidden">
-    <div class="modal-content">
-      <h2>Your Cart – Walmart™</h2>
-      <p>This opens Walmart’s real cart page.</p>
-      <button class="pill"
-        onclick="window.open('https://www.walmart.com/cart','_blank')">Go to Cart</button>
-      <button class="pill ghost" onclick="closeModal('cartModal')">Close</button>
-    </div>
+  <div class="frame">
+    <img class="mock" src="img/walmart-mock.png" alt="Walmart homepage (static mock)" />
   </div>
 
-  <!-- INFO -->
-  <div id="infoModal" class="modal hidden">
-    <div class="modal-content">
-      <h2>About Walmart & VoxTalk</h2>
-      <p><strong>VoxTalk™ AI</strong> helps customers shop confidently — voice or text.
-      Visit <a href="https://www.walmart.com" target="_blank">Walmart.com</a>.</p>
-      <button class="pill ghost" onclick="closeModal('infoModal')">Close</button>
-    </div>
+  <div class="cta-wrap">
+    <button id="openAssistant" class="cta" type="button" aria-haspopup="dialog" aria-controls="assistantOverlay">
+      <span class="spark" aria-hidden="true"></span>
+      <span>Talk to Walmart Assistant</span>
+    </button>
   </div>
 
-  <footer class="footer">
-    © 2025 • Powered by VoxTalk — A Comfortable AI Experience
-  </footer>
+  <div id="assistantOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Walmart Assistant">
+    <div class="sheet">
+      <div class="sheet-head">
+        <span class="spark" aria-hidden="true"></span>
+        <span>Walmart Assistant (Beta)</span>
+      </div>
+      <div class="sheet-body">
+        <iframe id="assistantFrame" src="/" allow="microphone"></iframe>
+      </div>
+    </div>
+    <div class="hint">Click outside or press Esc to close</div>
+  </div>
 
   <script>
-  // Upload
-  const fileUpload=document.createElement("input");
-  fileUpload.type="file";fileUpload.hidden=true;document.body.appendChild(fileUpload);
-  document.getElementById("taglineUpload").onclick=()=>fileUpload.click();
+    const overlay = document.getElementById('assistantOverlay');
+    const openBtn = document.getElementById('openAssistant');
+    const iframe = document.getElementById('assistantFrame');
 
-  // Modal logic
-  function openModal(id){document.getElementById(id).classList.remove("hidden");}
-  function closeModal(id){document.getElementById(id).classList.add("hidden");}
-  document.querySelectorAll(".modal").forEach(m=>{
-    m.addEventListener("click",e=>{if(e.target===m)m.classList.add("hidden");});
-  });
+    openBtn.addEventListener('click', () => { overlay.style.display = 'flex'; });
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.style.display = 'none'; });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.style.display = 'none'; });
 
-  // Voice mic / halo label
-  const haloBtn=document.getElementById("haloBtn");
-  const stopBtn=document.getElementById("stopBtn");
-  const haloLabel=document.getElementById("haloLabel");
-  const remote=document.getElementById("remote");
-  let pc,localStream;
-
-  haloBtn.onclick=async()=>{
-    haloBtn.disabled=true;
-    haloLabel.textContent="Connecting…";
-    const resp=await fetch("/session",{method:"POST"});
-    const data=await resp.json();
-    if(!data?.client_secret?.value){haloLabel.textContent="Error";return;}
-    pc=new RTCPeerConnection();
-    pc.ontrack=e=>remote.srcObject=e.streams[0];
-    localStream=await navigator.mediaDevices.getUserMedia({audio:true});
-    localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
-    const offer=await pc.createOffer();await pc.setLocalDescription(offer);
-    const r2=await fetch("https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",{
-      method:"POST",
-      headers:{
-        Authorization:`Bearer ${data.client_secret.value}`,
-        "Content-Type":"application/sdp"
-      },
-      body:offer.sdp
+    // Make the embedded app voice-only and branded
+    iframe.addEventListener('load', () => {
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        const quiet = doc.querySelector('.quiet');
+        if (quiet) quiet.style.display = 'none';
+        const haloLabel = doc.getElementById('haloLabel');
+        if (haloLabel) haloLabel.textContent = 'Talk to Walmart Assistant';
+        const stopBtn = doc.getElementById('stopBtn');
+        if (stopBtn) stopBtn.textContent = 'Stop Assistant';
+      } catch (e) {
+        console.warn('Could not tweak embedded app:', e);
+      }
     });
-    const answer={type:"answer",sdp:await r2.text()};
-    await pc.setRemoteDescription(answer);
-    haloLabel.textContent="Live";
-    stopBtn.classList.remove("hidden");
-  };
-
-  stopBtn.onclick=()=>{
-    if(localStream)localStream.getTracks().forEach(t=>t.stop());
-    if(pc)pc.close();
-    haloBtn.disabled=false;
-    haloLabel.textContent="Click to Talk";
-    stopBtn.classList.add("hidden");
-  };
-
-  // Classic chat
-  const form=document.getElementById("quietForm");
-  const input=document.getElementById("quietInput");
-  const thread=document.getElementById("thread");
-  form.onsubmit=async(e)=>{
-    e.preventDefault();
-    const text=input.value.trim(); if(!text)return;
-    const userDiv=document.createElement("div");
-    userDiv.textContent="🧍 "+text; thread.appendChild(userDiv); input.value="";
-    const resp=await fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:text})});
-    const data=await resp.json();
-    const botDiv=document.createElement("div");
-    botDiv.textContent="🤖 "+(data.reply||"..."); thread.appendChild(botDiv);
-    thread.scrollTop=thread.scrollHeight;
-  };
-
-  // Mic inside chat (speech-to-text)
-  const micBtn=document.getElementById("micBtn");
-  if('webkitSpeechRecognition' in window){
-    const recog=new webkitSpeechRecognition();
-    recog.lang='en-US';
-    recog.onresult=e=>{input.value=e.results[0][0].transcript;};
-    micBtn.onclick=()=>{
-      recog.start();
-      micBtn.textContent='🎙️';
-      setTimeout(()=>micBtn.textContent='🎤',2000);
-    };
-  } else {micBtn.disabled=true;}
   </script>
 </body>
 </html>
