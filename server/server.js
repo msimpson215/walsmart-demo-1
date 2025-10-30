@@ -1,6 +1,8 @@
 // server/server.js
 import express from "express";
 import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
 
 dotenv.config();
 
@@ -20,7 +22,7 @@ app.use(express.static("public", {
 
 app.use(express.json({ limit: "2mb" }));
 
-// Health/version
+// 🩺 Health/version
 const STARTED_AT = new Date().toISOString();
 app.get("/__health", (_req, res) => {
   res.json({
@@ -30,6 +32,47 @@ app.get("/__health", (_req, res) => {
     commit: process.env.RENDER_GIT_COMMIT || process.env.COMMIT || null,
     env: process.env.RENDER || "render",
   });
+});
+
+// 📂 List files under public/img so we know the exact filename Render sees
+app.get("/__ls", (_req, res) => {
+  try {
+    const dir = path.join(process.cwd(), "public", "img");
+    const items = fs.existsSync(dir) ? fs.readdirSync(dir) : [];
+    res.json({
+      ok: true,
+      dir: "/public/img",
+      items
+    });
+  } catch (e) {
+    console.error("LS error:", e);
+    res.status(500).json({ ok: false, error: String(e) });
+  }
+});
+
+// 🧪 Serve a minimal page from the server (bypasses static middleware)
+// This removes any possibility of stale cached static HTML.
+app.get("/__static-test", (_req, res) => {
+  const html = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>__static-test @ ${STARTED_AT}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+    body{margin:0;background:#eee;font-family:system-ui,Arial}
+    .bar{padding:12px;background:#222;color:#fff}
+    img{width:100%;height:auto;display:block}
+  </style>
+</head>
+<body>
+  <div class="bar"><b>Server-started:</b> ${STARTED_AT} — If you see the big screenshot below, the image path is correct.</div>
+  <img src="/img/walmart_mock_.png" alt="Walmart static mock"/>
+  <div class="bar">Bottom. Now try your real static page: <a href="/walmart-static.html">/walmart-static.html</a></div>
+</body>
+</html>`;
+  res.setHeader("Cache-Control", "no-store");
+  res.type("html").send(html);
 });
 
 // TEXT CHAT
