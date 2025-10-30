@@ -1,103 +1,19 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Walmart | Voice Assistant (Demo)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root{--blue:#0071ce;--yellow:#fdb913;}
-    *{box-sizing:border-box}
-    body{
-      margin:0;background:#f6f7f8;
-      font-family:Segoe UI, Roboto, Arial, sans-serif;
-      display:flex;flex-direction:column;align-items:center;
-    }
-    /* Static mock */
-    .frame{width:100%;max-width:1280px;margin:0 auto;position:relative}
-    .mock{width:100%;height:auto;display:block;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-    /* Walmart-styled call-to-action */
-    .cta-wrap{display:flex;justify-content:center}
-    .cta{
-      margin:-3.25rem 0 1.5rem;
-      background:var(--blue); color:#fff; border:none; border-radius:999px;
-      padding:12px 20px; font-weight:800; font-size:1.05rem; cursor:pointer;
-      box-shadow:0 4px 12px rgba(0,0,0,.25);
-      display:inline-flex; align-items:center; gap:.5rem;
-    }
-    .spark{
-      width:18px; height:18px; display:inline-block; vertical-align:middle;
-      background: conic-gradient(from 0deg at 50% 50%, var(--yellow) 0 360deg);
-      -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\'0 0 64 64\'><path d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(60 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(120 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(180 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(240 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(300 32 32)\' d=\'M31 0h2v22h-2z\'/></svg>') center/contain no-repeat;
-              mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox=\'0 0 64 64\'><path d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(60 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(120 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(180 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(240 32 32)\' d=\'M31 0h2v22h-2z\'/><path transform=\'rotate(300 32 32)\' d=\'M31 0h2v22h-2z\'/></svg>') center/contain no-repeat;
-    }
-    .cta:hover{background:#005fad}
-
-    /* Overlay */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(2px)}
-    .sheet{
-      width:min(820px,92vw); height:min(88vh,900px);
-      background:#fff; border-radius:16px; overflow:hidden;
-      box-shadow:0 14px 48px rgba(0,0,0,.45); display:flex; flex-direction:column;
-    }
-    .sheet-head{
-      background:var(--blue); color:#fff; padding:10px 14px; display:flex; align-items:center; gap:.6rem; font-weight:800;
-    }
-    .sheet-head .spark{filter:drop-shadow(0 0 4px rgba(0,0,0,.2)); background:var(--yellow)}
-    .sheet-body{flex:1; min-height:0}
-    .sheet-body iframe{width:100%; height:100%; border:0}
-    .hint{color:#ddd; font-size:.9rem; text-align:center; margin-top:8px}
-  </style>
-</head>
-<body>
-
-  <div class="frame">
-    <!-- IMPORTANT: matches your repo filename exactly -->
-    <img class="mock" src="/img/walmart_mock_.png?v=4" alt="Walmart homepage (static mock)" />
-  </div>
-
-  <div class="cta-wrap">
-    <button id="openAssistant" class="cta" type="button" aria-haspopup="dialog" aria-controls="assistantOverlay">
-      <span class="spark" aria-hidden="true"></span>
-      <span>Talk to Walmart Assistant</span>
-    </button>
-  </div>
-
-  <div id="assistantOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Walmart Assistant">
-    <div class="sheet">
-      <div class="sheet-head">
-        <span class="spark" aria-hidden="true"></span>
-        <span>Walmart Assistant (Beta)</span>
-      </div>
-      <div class="sheet-body">
-        <iframe id="assistantFrame" src="/" allow="microphone"></iframe>
-      </div>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Walmart Static — Minimal</title>
+  </head>
+  <body style="margin:0;padding:0;font-family:system-ui,Arial;background:#eee">
+    <div style="padding:12px;background:#222;color:#fff">
+      <strong>Minimal test page:</strong> If you see the big Walmart screenshot below, the path is correct.
     </div>
-    <div class="hint">Click outside or press Esc to close</div>
-  </div>
 
-  <script>
-    const overlay = document.getElementById('assistantOverlay');
-    const openBtn = document.getElementById('openAssistant');
-    const iframe = document.getElementById('assistantFrame');
+    <!-- ABSOLUTE path to avoid any relative confusion -->
+    <img src="/img/walmart_mock_.png" alt="Walmart static mock" style="width:100%;height:auto;display:block" />
 
-    openBtn.addEventListener('click', () => { overlay.style.display = 'flex'; });
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.style.display = 'none'; });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.style.display = 'none'; });
-
-    // Make the embedded app voice-only and branded
-    iframe.addEventListener('load', () => {
-      try {
-        const doc = iframe.contentDocument || iframe.contentWindow.document;
-        const quiet = doc.querySelector('.quiet');
-        if (quiet) quiet.style.display = 'none';
-        const haloLabel = doc.getElementById('haloLabel');
-        if (haloLabel) haloLabel.textContent = 'Talk to Walmart Assistant';
-        const stopBtn = doc.getElementById('stopBtn');
-        if (stopBtn) stopBtn.textContent = 'Stop Assistant';
-      } catch (e) {
-        console.warn('Could not tweak embedded app:', e);
-      }
-    });
-  </script>
-</body>
+    <div style="padding:12px;background:#222;color:#fff">
+      Bottom of page.
+    </div>
+  </body>
 </html>
