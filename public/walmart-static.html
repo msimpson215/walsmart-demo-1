@@ -1,19 +1,62 @@
 <!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Walmart Static — Minimal</title>
-  </head>
-  <body style="margin:0;padding:0;font-family:system-ui,Arial;background:#eee">
-    <div style="padding:12px;background:#222;color:#fff">
-      <strong>Minimal test page:</strong> If you see the big Walmart screenshot below, the path is correct.
-    </div>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Walmart — Static Mock (no app changes)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{--blue:#0071ce;--yellow:#fdb913;}
+    *{box-sizing:border-box}
+    body{margin:0;background:#f6f7f8;font-family:Segoe UI, Roboto, Arial, sans-serif}
+    .frame{max-width:1280px;margin:0 auto}
+    .mock{width:100%;height:auto;display:block;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+    .cta-wrap{display:flex;justify-content:center;margin:-3rem 0 1.5rem}
+    .cta{
+      background:var(--blue);color:#fff;border:0;border-radius:999px;
+      padding:12px 20px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25)
+    }
+    .cta:hover{background:#005fad}
+    /* Overlay */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:9999}
+    .sheet{width:min(820px,92vw);height:min(88vh,900px);background:#fff;border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+    .sheet-head{background:var(--blue);color:#fff;padding:10px 14px;font-weight:800}
+    .sheet-body{flex:1;min-height:0}
+    .sheet-body iframe{width:100%;height:100%;border:0}
+    .hint{color:#bbb;text-align:center;margin-top:8px}
+  </style>
+</head>
+<body>
 
-    <!-- ABSOLUTE path to avoid any relative confusion -->
-    <img src="/img/walmart_mock_.png" alt="Walmart static mock" style="width:100%;height:auto;display:block" />
+  <div class="frame">
+    <!-- BYPASS Render static: load screenshot straight from GitHub RAW -->
+    <img
+      class="mock"
+      src="https://raw.githubusercontent.com/msimpson215/walsmart-demo-1/main/public/img/walmart_mock_.png"
+      alt="Walmart homepage (static mock)"
+    />
+  </div>
 
-    <div style="padding:12px;background:#222;color:#fff">
-      Bottom of page.
+  <div class="cta-wrap">
+    <button id="openAssistant" class="cta" type="button">Talk to Walmart Assistant</button>
+  </div>
+
+  <!-- Overlay loading your EXISTING app at '/' (no changes to your app) -->
+  <div id="assistantOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Walmart Assistant">
+    <div class="sheet">
+      <div class="sheet-head">Walmart Assistant</div>
+      <div class="sheet-body">
+        <iframe id="assistantFrame" src="/"></iframe>
+      </div>
     </div>
-  </body>
+    <div class="hint">Click outside or press Esc to close</div>
+  </div>
+
+  <script>
+    const overlay = document.getElementById('assistantOverlay');
+    const openBtn = document.getElementById('openAssistant');
+    openBtn.addEventListener('click', () => { overlay.style.display = 'flex'; });
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.style.display = 'none'; });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.style.display = 'none'; });
+  </script>
+</body>
 </html>
